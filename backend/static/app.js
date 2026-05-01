@@ -89,7 +89,11 @@ function renderFeed() {
 
     feedContainer.innerHTML = sortedItems.map(item => `
         <div class="item-card" onclick="focusOnMap(${item.latitude}, ${item.longitude})">
-            <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
+                ${currentUser && currentUser.id === item.owner_id ? 
+                    `<button class="delete-btn" onclick="event.stopPropagation(); handleDelete(${item.id})">×</button>` : ''}
+            </div>
             <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">${item.title}</h3>
             <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">${item.description}</p>
             <small style="color: var(--text-muted); opacity: 0.7;">${new Date(item.created_at).toLocaleDateString()}</small>
@@ -128,8 +132,12 @@ function renderMarkers() {
         });
 
         const popupContent = `
-            <div style="padding: 5px;">
-                <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
+            <div style="padding: 5px; min-width: 150px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
+                    <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
+                    ${currentUser && currentUser.id === item.owner_id ? 
+                        `<button class="delete-btn" onclick="handleDelete(${item.id})" title="Delete item">×</button>` : ''}
+                </div>
                 <h4 style="margin: 5px 0;">${item.title}</h4>
                 <p style="margin: 0; font-size: 0.85rem;">${item.description}</p>
             </div>
@@ -307,6 +315,23 @@ document.getElementById('reportForm').addEventListener('submit', async (e) => {
         alert(err.message);
     }
 });
+
+async function handleDelete(itemId) {
+    if (!confirm("Are you sure you want to delete this item?")) return;
+
+    try {
+        const res = await fetch(`/api/items/${itemId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error("Failed to delete item");
+        
+        await loadItems();
+    } catch (err) {
+        alert(err.message);
+    }
+}
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {

@@ -264,3 +264,20 @@ h1 {
 .leaflet-popup-tip {
   background: var(--bg-color);
 }
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 4px;
+  transition: color 0.2s ease;
+  border-radius: 4px;
+}
+
+.delete-btn:hover {
+  color: var(--lost-color);
+  background: rgba(239, 68, 68, 0.1);
+}
