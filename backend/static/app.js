@@ -27,12 +27,18 @@ let isLoginMode = true;
 
 // Initialize Map
 function initMap() {
-    // Default to a central location (e.g., London, or user's location)
-    map = L.map('map').setView([51.505, -0.09], 13);
-
-    // Satellite view tiles (Esri World Imagery)
+    // Default to a central location with a minimum zoom to fill the container
+    map = L.map('map', {
+        minZoom: 2,
+        maxBounds: [[-90, -180], [90, 180]],
+        maxBoundsViscosity: 1.0
+    }).setView([51.505, -0.09], 13);
+ 
+    // Satellite view tiles with noWrap to prevent repeating
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EBP, and the GIS User Community'
+        noWrap: true,
+        bounds: [[-90, -180], [90, 180]],
+        attribution: 'Tiles &copy; Esri'
     }).addTo(map);
 
     // Try to get user's location
