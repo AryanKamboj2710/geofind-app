@@ -1,13 +1,13 @@
 :root {
-  --primary-color: #f59e0b; /* Amber/Gold */
-  --primary-hover: #d97706;
-  --bg-color: #020617; /* Deepest Slate / True Black */
-  --surface-color: rgba(15, 23, 42, 0.8);
-  --text-color: #f8fafc;
-  --text-muted: #94a3b8;
+  --primary-color: #a3e635; /* Lime */
+  --primary-hover: #84cc16;
+  --bg-color: #05150e; /* Deep Forest */
+  --surface-color: rgba(10, 31, 22, 0.8);
+  --text-color: #f0fdf4;
+  --text-muted: #86efac;
   --lost-color: #ef4444;
   --found-color: #10b981;
-  --border-color: rgba(255, 255, 255, 0.05);
+  --border-color: rgba(134, 239, 172, 0.1);
 }
 
 * {
@@ -40,7 +40,7 @@ header {
 h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(to right, #fbbf24, #f59e0b);
+  background: linear-gradient(to right, #a3e635, #4ade80);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -282,50 +282,50 @@ h1 {
   background: rgba(239, 68, 68, 0.1);
 }
 
-/* Report Section Specific - Darker Theme */
+/* Report Section Specific - Forest Theme */
 #reportModal .modal-content {
-  background: #1e293b; /* Darker Slate */
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #f8fafc;
+  background: #0a1f16; /* Deep Forest Green */
+  border: 1px solid rgba(163, 230, 53, 0.2);
+  color: #f0fdf4;
 }
 
 #reportModal .modal-header h3 {
-  color: #ffffff;
+  color: #a3e635; /* Lime */
 }
 
 #reportModal .form-group label {
-  color: #94a3b8;
+  color: #86efac;
   font-weight: 500;
 }
 
 #reportModal .form-group input, 
 #reportModal .form-group select, 
 #reportModal .form-group textarea {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #ffffff; /* Reverting to white for visibility on dark background */
+  background: rgba(5, 21, 14, 0.8);
+  border: 1px solid rgba(163, 230, 53, 0.1);
+  color: #ffffff;
 }
 
 #reportModal .form-group select option {
-  background-color: #1e293b;
+  background-color: #0a1f16;
   color: #ffffff;
 }
 
 #reportModal .form-group input::placeholder,
 #reportModal .form-group textarea::placeholder {
-  color: #64748b;
+  color: #3f6212;
 }
 
 #reportModal .form-group input:focus, 
 #reportModal .form-group select:focus, 
 #reportModal .form-group textarea:focus {
-  background: rgba(15, 23, 42, 0.8);
+  background: rgba(5, 21, 14, 1);
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.2);
 }
 
 #reportModal .close-btn {
-  color: #94a3b8;
+  color: #86efac;
 }
 
 /* Overall UI Enhancements */
