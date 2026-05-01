@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: geofind-web
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: geofind-db
+          property: connectionString
+
+databases:
+  - name: geofind-db
+    plan: free
