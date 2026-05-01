@@ -1,0 +1,315 @@
+// Global State
+let map;
+let markers = [];
+let items = [];
+let currentUser = null;
+let token = localStorage.getItem('token');
+let tempMarker = null;
+
+// DOM Elements
+const authSection = document.getElementById('authSection');
+const feedContainer = document.getElementById('feedContainer');
+const reportBtn = document.getElementById('reportBtn');
+
+// Modals
+const authModal = document.getElementById('authModal');
+const reportModal = document.getElementById('reportModal');
+
+// Auth Form Elements
+const authForm = document.getElementById('authForm');
+const authTitle = document.getElementById('authTitle');
+const authSubmitBtn = document.getElementById('authSubmitBtn');
+const toggleAuthModeBtn = document.getElementById('toggleAuthMode');
+const nameGroup = document.getElementById('nameGroup');
+const authToggleText = document.getElementById('authToggleText');
+
+let isLoginMode = true;
+
+// Initialize Map
+function initMap() {
+    // Default to a central location (e.g., London, or user's location)
+    map = L.map('map').setView([51.505, -0.09], 13);
+
+    // Dark mode map tiles (CartoDB Dark Matter)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        subdomains: 'abcd',
+        maxZoom: 20
+    }).addTo(map);
+
+    // Try to get user's location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+            const { latitude, longitude } = position.coords;
+            map.setView([latitude, longitude], 13);
+        });
+    }
+
+    // Map click event for reporting
+    map.on('click', function(e) {
+        if (!currentUser) return; // Only logged in users can report
+        
+        if (tempMarker) {
+            map.removeLayer(tempMarker);
+        }
+        
+        tempMarker = L.marker(e.latlng).addTo(map);
+        
+        // Open report modal and pre-fill coordinates
+        document.getElementById('itemLat').value = e.latlng.lat.toFixed(6);
+        document.getElementById('itemLng').value = e.latlng.lng.toFixed(6);
+        reportModal.classList.add('active');
+    });
+
+    loadItems();
+}
+
+// Fetch and display items
+async function loadItems() {
+    try {
+        const response = await fetch('/api/items');
+        items = await response.json();
+        renderFeed();
+        renderMarkers();
+    } catch (error) {
+        console.error("Failed to load items", error);
+        feedContainer.innerHTML = '<p style="color: red;">Failed to load items.</p>';
+    }
+}
+
+// Render sidebar feed
+function renderFeed() {
+    if (items.length === 0) {
+        feedContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No items reported yet.</p>';
+        return;
+    }
+
+    // Sort by newest first
+    const sortedItems = [...items].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    feedContainer.innerHTML = sortedItems.map(item => `
+        <div class="item-card" onclick="focusOnMap(${item.latitude}, ${item.longitude})">
+            <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
+            <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">${item.title}</h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">${item.description}</p>
+            <small style="color: var(--text-muted); opacity: 0.7;">${new Date(item.created_at).toLocaleDateString()}</small>
+        </div>
+    `).join('');
+}
+
+// Render map markers
+function renderMarkers() {
+    // Clear existing markers
+    markers.forEach(marker => map.removeLayer(marker));
+    markers = [];
+
+    items.forEach(item => {
+        const color = item.status === 'lost' ? '#ef4444' : '#10b981';
+        
+        const markerHtmlStyles = `
+            background-color: ${color};
+            width: 1.5rem;
+            height: 1.5rem;
+            display: block;
+            left: -0.75rem;
+            top: -0.75rem;
+            position: relative;
+            border-radius: 50%;
+            border: 2px solid #FFFFFF;
+            box-shadow: 0 0 10px ${color};
+        `;
+        
+        const icon = L.divIcon({
+            className: "custom-pin",
+            iconAnchor: [0, 0],
+            labelAnchor: [-6, 0],
+            popupAnchor: [0, -15],
+            html: `<span style="${markerHtmlStyles}" />`
+        });
+
+        const popupContent = `
+            <div style="padding: 5px;">
+                <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
+                <h4 style="margin: 5px 0;">${item.title}</h4>
+                <p style="margin: 0; font-size: 0.85rem;">${item.description}</p>
+            </div>
+        `;
+
+        const marker = L.marker([item.latitude, item.longitude], { icon })
+            .bindPopup(popupContent)
+            .addTo(map);
+            
+        markers.push(marker);
+    });
+}
+
+function focusOnMap(lat, lng) {
+    map.setView([lat, lng], 16, { animate: true });
+}
+
+// Auth State Management
+async function checkAuth() {
+    if (!token) return updateAuthUI(false);
+
+    try {
+        const response = await fetch('/api/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+            currentUser = await response.json();
+            updateAuthUI(true);
+        } else {
+            handleLogout();
+        }
+    } catch (e) {
+        handleLogout();
+    }
+}
+
+function updateAuthUI(isLoggedIn) {
+    if (isLoggedIn) {
+        authSection.innerHTML = `
+            <span style="margin-right: 1rem;">Hi, ${currentUser.name || currentUser.email}</span>
+            <button onclick="handleLogout()" style="border-color: var(--lost-color); color: var(--lost-color);">Log Out</button>
+        `;
+        reportBtn.style.display = 'block';
+    } else {
+        authSection.innerHTML = `
+            <button id="loginBtn">Log In</button>
+            <button id="signupBtn" style="background: var(--primary-color); border-color: var(--primary-color);">Sign Up</button>
+        `;
+        document.getElementById('loginBtn').addEventListener('click', () => openAuthModal(true));
+        document.getElementById('signupBtn').addEventListener('click', () => openAuthModal(false));
+        reportBtn.style.display = 'none';
+    }
+}
+
+function handleLogout() {
+    token = null;
+    currentUser = null;
+    localStorage.removeItem('token');
+    updateAuthUI(false);
+}
+
+// Modal Event Listeners
+function openAuthModal(login = true) {
+    isLoginMode = login;
+    authTitle.textContent = isLoginMode ? 'Log In' : 'Sign Up';
+    authSubmitBtn.textContent = isLoginMode ? 'Log In' : 'Sign Up';
+    nameGroup.style.display = isLoginMode ? 'none' : 'block';
+    if(!isLoginMode) document.getElementById('name').setAttribute('required', 'true');
+    else document.getElementById('name').removeAttribute('required');
+    
+    authToggleText.innerHTML = isLoginMode 
+        ? 'Don\'t have an account? <span id="toggleAuthMode">Sign Up</span>'
+        : 'Already have an account? <span id="toggleAuthMode">Log In</span>';
+        
+    document.getElementById('toggleAuthMode').addEventListener('click', () => openAuthModal(!isLoginMode));
+    authModal.classList.add('active');
+}
+
+document.getElementById('closeAuthModal').addEventListener('click', () => authModal.classList.remove('active'));
+document.getElementById('closeReportModal').addEventListener('click', () => {
+    reportModal.classList.remove('active');
+    if (tempMarker) map.removeLayer(tempMarker);
+});
+
+reportBtn.addEventListener('click', () => {
+    alert("Click anywhere on the map to drop a pin and report an item.");
+});
+
+// Form Submissions
+authForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    try {
+        if (isLoginMode) {
+            // Login uses OAuth2PasswordRequestForm which requires URL encoded form data
+            const formData = new URLSearchParams();
+            formData.append('username', email);
+            formData.append('password', password);
+            
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            
+            if (!res.ok) throw new Error("Login failed");
+            const data = await res.json();
+            token = data.access_token;
+            localStorage.setItem('token', token);
+        } else {
+            // Registration uses JSON
+            const name = document.getElementById('name').value;
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, name })
+            });
+            
+            if (!res.ok) throw new Error("Registration failed");
+            
+            // Auto login after register
+            const formData = new URLSearchParams();
+            formData.append('username', email);
+            formData.append('password', password);
+            const loginRes = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            const data = await loginRes.json();
+            token = data.access_token;
+            localStorage.setItem('token', token);
+        }
+        
+        authModal.classList.remove('active');
+        authForm.reset();
+        await checkAuth();
+    } catch (err) {
+        alert(err.message);
+    }
+});
+
+document.getElementById('reportForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!token) return alert("Please log in first");
+
+    const payload = {
+        title: document.getElementById('itemTitle').value,
+        description: document.getElementById('itemDescription').value,
+        status: document.getElementById('itemStatus').value,
+        latitude: parseFloat(document.getElementById('itemLat').value),
+        longitude: parseFloat(document.getElementById('itemLng').value)
+    };
+
+    try {
+        const res = await fetch('/api/items', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error("Failed to report item");
+        
+        reportModal.classList.remove('active');
+        document.getElementById('reportForm').reset();
+        tempMarker = null; // Keep the real marker that gets fetched
+        await loadItems();
+    } catch (err) {
+        alert(err.message);
+    }
+});
+
+// Initialization
+document.addEventListener('DOMContentLoaded', () => {
+    initMap();
+    checkAuth();
+});
