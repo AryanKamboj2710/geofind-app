@@ -1,7 +1,7 @@
 :root {
   --primary-color: #6366f1;
   --primary-hover: #4f46e5;
-  --bg-color: #0f172a;
+  --bg-color: #0b1120;
   --surface-color: rgba(30, 41, 59, 0.7);
   --text-color: #f8fafc;
   --text-muted: #94a3b8;
@@ -282,32 +282,33 @@ h1 {
   background: rgba(239, 68, 68, 0.1);
 }
 
-/* Report Section Specific - Black text in inputs */
+/* Report Section Specific - Darker Theme */
 #reportModal .modal-content {
-  background: #ffffff; /* White background for report section to support black text */
-  color: #1e293b;
+  background: #1e293b; /* Darker Slate */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #f8fafc;
 }
 
 #reportModal .modal-header h3 {
-  color: #0f172a;
+  color: #ffffff;
 }
 
 #reportModal .form-group label {
-  color: #475569;
+  color: #94a3b8;
   font-weight: 500;
 }
 
 #reportModal .form-group input, 
 #reportModal .form-group select, 
 #reportModal .form-group textarea {
-  background: #f1f5f9;
-  border: 1px solid #cbd5e1;
-  color: #000000; /* Black color for font in report section */
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ffffff; /* Reverting to white for visibility on dark background */
 }
 
 #reportModal .form-group select option {
-  background-color: #ffffff;
-  color: #000000;
+  background-color: #1e293b;
+  color: #ffffff;
 }
 
 #reportModal .form-group input::placeholder,
@@ -318,13 +319,13 @@ h1 {
 #reportModal .form-group input:focus, 
 #reportModal .form-group select:focus, 
 #reportModal .form-group textarea:focus {
-  background: #ffffff;
+  background: rgba(15, 23, 42, 0.8);
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
 #reportModal .close-btn {
-  color: #64748b;
+  color: #94a3b8;
 }
 
 /* Overall UI Enhancements */
