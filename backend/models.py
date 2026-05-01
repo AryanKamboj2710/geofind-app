@@ -23,6 +23,7 @@ class Item(Base):
     status = Column(String) # "lost" or "found"
     latitude = Column(Float)
     longitude = Column(Float)
+    contact_number = Column(String)
     created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
     owner_id = Column(Integer, ForeignKey("users.id"))
 

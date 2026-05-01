@@ -96,6 +96,9 @@ function renderFeed() {
             </div>
             <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">${item.title}</h3>
             <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">${item.description}</p>
+            <div style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-color);">
+                <strong>Contact:</strong> ${item.contact_number}
+            </div>
             <small style="color: var(--text-muted); opacity: 0.7;">${new Date(item.created_at).toLocaleDateString()}</small>
         </div>
     `).join('');
@@ -140,6 +143,9 @@ function renderMarkers() {
                 </div>
                 <h4 style="margin: 5px 0;">${item.title}</h4>
                 <p style="margin: 0; font-size: 0.85rem;">${item.description}</p>
+                <div style="margin-top: 8px; font-size: 0.85rem; color: var(--primary-color);">
+                    <strong>Call:</strong> ${item.contact_number}
+                </div>
             </div>
         `;
 
@@ -292,7 +298,8 @@ document.getElementById('reportForm').addEventListener('submit', async (e) => {
         description: document.getElementById('itemDescription').value,
         status: document.getElementById('itemStatus').value,
         latitude: parseFloat(document.getElementById('itemLat').value),
-        longitude: parseFloat(document.getElementById('itemLng').value)
+        longitude: parseFloat(document.getElementById('itemLng').value),
+        contact_number: document.getElementById('itemContact').value
     };
 
     try {

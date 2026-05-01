@@ -8,6 +8,7 @@ class ItemBase(BaseModel):
     status: str
     latitude: float
     longitude: float
+    contact_number: str
 
 class ItemCreate(ItemBase):
     pass
