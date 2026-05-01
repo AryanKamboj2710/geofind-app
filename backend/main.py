@@ -43,6 +43,10 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         raise credentials_exception
     return user
 
+@app.get("/ping")
+async def ping():
+    return {"status": "alive"}
+
 @app.get("/")
 async def read_index():
     return FileResponse(os.path.join(static_dir, "index.html"))
