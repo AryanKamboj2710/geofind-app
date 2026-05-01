@@ -305,6 +305,16 @@ h1 {
   color: #000000; /* Black color for font in report section */
 }
 
+#reportModal .form-group select option {
+  background-color: #ffffff;
+  color: #000000;
+}
+
+#reportModal .form-group input::placeholder,
+#reportModal .form-group textarea::placeholder {
+  color: #64748b;
+}
+
 #reportModal .form-group input:focus, 
 #reportModal .form-group select:focus, 
 #reportModal .form-group textarea:focus {
