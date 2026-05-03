@@ -22,11 +22,11 @@ function initMap() {
         maxBoundsViscosity: 1.0
     }).setView([51.505, -0.09], 13);
  
-    // Satellite view tiles with noWrap to prevent repeating
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    // Standard street map view (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         noWrap: true,
         bounds: [[-90, -180], [90, 180]],
-        attribution: 'Tiles &copy; Esri'
+        attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
     // Try to get user's location
