@@ -14,13 +14,13 @@
     <header>
         <h1>GeoFind</h1>
         <div class="header-actions">
-            <div class="theme-switcher">
-                <select id="themeSelect">
-                    <option value="forest">🌲 Forest</option>
-                    <option value="midnight">🌌 Midnight</option>
-                    <option value="solar">☀️ Solar</option>
-                    <option value="oceanic">🌊 Oceanic</option>
-                </select>
+            <div class="theme-toggle-wrapper">
+                <span class="theme-toggle-label">Dark</span>
+                <label class="theme-switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider"></span>
+                </label>
+                <span class="theme-toggle-label">Light</span>
             </div>
             <div class="auth-buttons" id="authSection">
                 <!-- Dynamically populated by JS based on auth state -->

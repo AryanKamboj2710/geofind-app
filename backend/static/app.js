@@ -14,7 +14,7 @@ const reportBtn = document.getElementById('reportBtn');
 // Modals
 const authModal = document.getElementById('authModal');
 const reportModal = document.getElementById('reportModal');
-const themeSelect = document.getElementById('themeSelect');
+const themeToggle = document.getElementById('themeToggle');
 
 // Auth Form Elements
 const authForm = document.getElementById('authForm');
@@ -329,24 +329,18 @@ document.getElementById('reportForm').addEventListener('submit', async (e) => {
 });
 
 // Theme Management
-function setTheme(themeName) {
-    // Remove current theme classes
-    document.body.classList.forEach(className => {
-        if (className.startsWith('theme-')) {
-            document.body.classList.remove(className);
-        }
-    });
-
-    // Add new theme class (except for forest which is default)
-    if (themeName !== 'forest') {
-        document.body.classList.add(`theme-${themeName}`);
+function setTheme(isLight) {
+    if (isLight) {
+        document.body.classList.add('light-theme');
+    } else {
+        document.body.classList.remove('light-theme');
     }
 
     // Save to localStorage
-    localStorage.setItem('selectedTheme', themeName);
+    localStorage.setItem('themePreference', isLight ? 'light' : 'dark');
     
-    // Update select dropdown value
-    if (themeSelect) themeSelect.value = themeName;
+    // Update toggle state
+    if (themeToggle) themeToggle.checked = isLight;
 }
 
 async function handleDelete(itemId) {
@@ -369,12 +363,12 @@ async function handleDelete(itemId) {
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize theme first to avoid flash
-    const savedTheme = localStorage.getItem('selectedTheme') || 'forest';
-    setTheme(savedTheme);
+    const savedTheme = localStorage.getItem('themePreference') || 'dark';
+    setTheme(savedTheme === 'light');
 
-    if (themeSelect) {
-        themeSelect.addEventListener('change', (e) => {
-            setTheme(e.target.value);
+    if (themeToggle) {
+        themeToggle.addEventListener('change', (e) => {
+            setTheme(e.target.checked);
         });
     }
 
