@@ -1,17 +1,17 @@
 :root {
-  /* Version: 1.1 - Pure Black Theme */
-  /* Default: Black & Electric Blue */
-  --primary-color: #3b82f6; /* Blue 500 */
-  --primary-hover: #2563eb;
+  /* Version: 1.2 - Extreme Black Theme */
+  /* Default: Pure Black & Neon Cyan */
+  --primary-color: #00f2ff; /* Neon Cyan */
+  --primary-hover: #00d8e6;
   --bg-color: #000000; /* Pure Black */
-  --surface-color: rgba(15, 23, 42, 0.8); /* Dark Slate Glass */
-  --text-color: #f8fafc;
-  --text-muted: #94a3b8;
-  --lost-color: #f43f5e;
-  --found-color: #10b981;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --header-gradient: linear-gradient(to right, #3b82f6, #8b5cf6);
-  --btn-gradient: linear-gradient(135deg, var(--primary-color), #2dd4bf);
+  --surface-color: #0a0a0a; /* Slightly lighter black for containers */
+  --text-color: #ffffff;
+  --text-muted: #a1a1aa; /* Zinc 400 */
+  --lost-color: #ff2d55;
+  --found-color: #00ff9d;
+  --border-color: rgba(255, 255, 255, 0.15);
+  --header-gradient: linear-gradient(to right, #00f2ff, #7000ff);
+  --btn-gradient: linear-gradient(135deg, var(--primary-color), #00ff9d);
 }
 
 * {
