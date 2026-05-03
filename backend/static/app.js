@@ -13,8 +13,6 @@ let authModal, reportModal, authForm, authTitle, authSubmitBtn, toggleAuthModeBt
 // Auth Form Elements (Selected after DOM is ready)
 let isLoginMode = true;
 
-let isLoginMode = true;
-
 // Initialize Map
 function initMap() {
     // Default to a central location with a minimum zoom to fill the container
@@ -315,7 +313,10 @@ async function handleAuthSubmit(e) {
                 body: formData
             });
             
-            if (!res.ok) throw new Error("Login failed");
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.detail || "Login failed");
+            }
             const data = await res.json();
             token = data.access_token;
             localStorage.setItem('token', token);
@@ -327,7 +328,10 @@ async function handleAuthSubmit(e) {
                 body: JSON.stringify({ email, password, name })
             });
             
-            if (!res.ok) throw new Error("Registration failed");
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.detail || "Registration failed");
+            }
             
             const formData = new URLSearchParams();
             formData.append('username', email);
@@ -337,6 +341,9 @@ async function handleAuthSubmit(e) {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData
             });
+            
+            if (!loginRes.ok) throw new Error("Auto-login failed after registration");
+            
             const data = await loginRes.json();
             token = data.access_token;
             localStorage.setItem('token', token);
@@ -346,6 +353,7 @@ async function handleAuthSubmit(e) {
         authForm.reset();
         await checkAuth();
     } catch (err) {
+        console.error("Auth error:", err);
         alert(err.message);
     }
 }
