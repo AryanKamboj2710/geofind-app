@@ -22,7 +22,7 @@ function initMap() {
         maxBoundsViscosity: 1.0
     }).setView([51.505, -0.09], 13);
  
-    // Sleek Dark Map View (CartoDB Dark Matter)
+    // zSleek Dark Map View (CartoDB Dark Matter)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         noWrap: true,
         bounds: [[-90, -180], [90, 180]],

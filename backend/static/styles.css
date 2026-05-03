@@ -1,16 +1,16 @@
 :root {
-  /* Default: Dark */
-  --primary-color: #a3e635; /* Lime */
-  --primary-hover: #84cc16;
-  --bg-color: #05150e; /* Deep Forest */
-  --surface-color: rgba(10, 31, 22, 0.8);
-  --text-color: #f0fdf4;
-  --text-muted: #86efac;
-  --lost-color: #ef4444;
+  /* Default: Black & Electric Blue */
+  --primary-color: #3b82f6; /* Blue 500 */
+  --primary-hover: #2563eb;
+  --bg-color: #000000; /* Pure Black */
+  --surface-color: rgba(15, 23, 42, 0.8); /* Dark Slate Glass */
+  --text-color: #f8fafc;
+  --text-muted: #94a3b8;
+  --lost-color: #f43f5e;
   --found-color: #10b981;
-  --border-color: rgba(134, 239, 172, 0.1);
-  --header-gradient: linear-gradient(to right, #a3e635, #4ade80);
-  --btn-gradient: linear-gradient(135deg, var(--primary-color), #818cf8);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --header-gradient: linear-gradient(to right, #3b82f6, #8b5cf6);
+  --btn-gradient: linear-gradient(135deg, var(--primary-color), #2dd4bf);
 }
 
 * {
