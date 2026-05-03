@@ -1,4 +1,5 @@
 :root {
+  /* Default: Forest */
   --primary-color: #a3e635; /* Lime */
   --primary-hover: #84cc16;
   --bg-color: #05150e; /* Deep Forest */
@@ -8,6 +9,50 @@
   --lost-color: #ef4444;
   --found-color: #10b981;
   --border-color: rgba(134, 239, 172, 0.1);
+  --header-gradient: linear-gradient(to right, #a3e635, #4ade80);
+  --btn-gradient: linear-gradient(135deg, var(--primary-color), #818cf8);
+}
+
+body.theme-midnight {
+  --primary-color: #8b5cf6;
+  --primary-hover: #7c3aed;
+  --bg-color: #0f172a;
+  --surface-color: rgba(30, 41, 59, 0.8);
+  --text-color: #f8fafc;
+  --text-muted: #94a3b8;
+  --lost-color: #f43f5e;
+  --found-color: #10b981;
+  --border-color: rgba(148, 163, 184, 0.1);
+  --header-gradient: linear-gradient(to right, #8b5cf6, #38bdf8);
+  --btn-gradient: linear-gradient(135deg, var(--primary-color), #38bdf8);
+}
+
+body.theme-solar {
+  --primary-color: #f59e0b;
+  --primary-hover: #d97706;
+  --bg-color: #1c1917;
+  --surface-color: rgba(41, 37, 36, 0.8);
+  --text-color: #fafaf9;
+  --text-muted: #a8a29e;
+  --lost-color: #ef4444;
+  --found-color: #10b981;
+  --border-color: rgba(168, 162, 158, 0.1);
+  --header-gradient: linear-gradient(to right, #f59e0b, #fbbf24);
+  --btn-gradient: linear-gradient(135deg, var(--primary-color), #f97316);
+}
+
+body.theme-oceanic {
+  --primary-color: #06b6d4;
+  --primary-hover: #0891b2;
+  --bg-color: #042f2e;
+  --surface-color: rgba(13, 74, 72, 0.8);
+  --text-color: #f0fdfa;
+  --text-muted: #5eead4;
+  --lost-color: #f43f5e;
+  --found-color: #10b981;
+  --border-color: rgba(94, 234, 212, 0.1);
+  --header-gradient: linear-gradient(to right, #06b6d4, #2dd4bf);
+  --btn-gradient: linear-gradient(135deg, var(--primary-color), #10b981);
 }
 
 * {
@@ -37,10 +82,43 @@ header {
   z-index: 1000;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.theme-switcher select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 0.5rem 2rem 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.875rem;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.theme-switcher select:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary-color);
+}
+
+.theme-switcher select option {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
 h1 {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(to right, #a3e635, #4ade80);
+  background: var(--header-gradient);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -282,50 +360,50 @@ h1 {
   background: rgba(239, 68, 68, 0.1);
 }
 
-/* Report Section Specific - Forest Theme */
+/* Report Section Specific */
 #reportModal .modal-content {
-  background: #0a1f16; /* Deep Forest Green */
-  border: 1px solid rgba(163, 230, 53, 0.2);
-  color: #f0fdf4;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
 }
 
 #reportModal .modal-header h3 {
-  color: #a3e635; /* Lime */
+  color: var(--primary-color);
 }
 
 #reportModal .form-group label {
-  color: #86efac;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
 #reportModal .form-group input, 
 #reportModal .form-group select, 
 #reportModal .form-group textarea {
-  background: rgba(5, 21, 14, 0.8);
-  border: 1px solid rgba(163, 230, 53, 0.1);
-  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
 }
 
 #reportModal .form-group select option {
-  background-color: #0a1f16;
-  color: #ffffff;
+  background-color: var(--bg-color);
+  color: var(--text-color);
 }
 
 #reportModal .form-group input::placeholder,
 #reportModal .form-group textarea::placeholder {
-  color: #3f6212;
+  opacity: 0.5;
 }
 
 #reportModal .form-group input:focus, 
 #reportModal .form-group select:focus, 
 #reportModal .form-group textarea:focus {
-  background: rgba(5, 21, 14, 1);
+  background: rgba(255, 255, 255, 0.08);
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(163, 230, 53, 0.2);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color), 0.2);
 }
 
 #reportModal .close-btn {
-  color: #86efac;
+  color: var(--text-muted);
 }
 
 /* Overall UI Enhancements */
@@ -348,8 +426,8 @@ h1 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-color), #818cf8);
-  box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
+  background: var(--btn-gradient);
+  box-shadow: 0 4px 14px 0 rgba(0, 0, 0, 0.2);
 }
 
 .btn-primary:hover {

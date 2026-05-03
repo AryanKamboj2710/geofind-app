@@ -14,6 +14,7 @@ const reportBtn = document.getElementById('reportBtn');
 // Modals
 const authModal = document.getElementById('authModal');
 const reportModal = document.getElementById('reportModal');
+const themeSelect = document.getElementById('themeSelect');
 
 // Auth Form Elements
 const authForm = document.getElementById('authForm');
@@ -327,6 +328,27 @@ document.getElementById('reportForm').addEventListener('submit', async (e) => {
     }
 });
 
+// Theme Management
+function setTheme(themeName) {
+    // Remove current theme classes
+    document.body.classList.forEach(className => {
+        if (className.startsWith('theme-')) {
+            document.body.classList.remove(className);
+        }
+    });
+
+    // Add new theme class (except for forest which is default)
+    if (themeName !== 'forest') {
+        document.body.classList.add(`theme-${themeName}`);
+    }
+
+    // Save to localStorage
+    localStorage.setItem('selectedTheme', themeName);
+    
+    // Update select dropdown value
+    if (themeSelect) themeSelect.value = themeName;
+}
+
 async function handleDelete(itemId) {
     if (!confirm("Are you sure you want to delete this item?")) return;
 
@@ -346,6 +368,16 @@ async function handleDelete(itemId) {
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize theme first to avoid flash
+    const savedTheme = localStorage.getItem('selectedTheme') || 'forest';
+    setTheme(savedTheme);
+
+    if (themeSelect) {
+        themeSelect.addEventListener('change', (e) => {
+            setTheme(e.target.value);
+        });
+    }
+
     initMap();
     checkAuth();
 });

@@ -13,10 +13,20 @@
 <body>
     <header>
         <h1>GeoFind</h1>
-        <div class="auth-buttons" id="authSection">
-            <!-- Dynamically populated by JS based on auth state -->
-            <button id="loginBtn">Log In</button>
-            <button id="signupBtn" style="background: var(--primary-color); border-color: var(--primary-color);">Sign Up</button>
+        <div class="header-actions">
+            <div class="theme-switcher">
+                <select id="themeSelect">
+                    <option value="forest">🌲 Forest</option>
+                    <option value="midnight">🌌 Midnight</option>
+                    <option value="solar">☀️ Solar</option>
+                    <option value="oceanic">🌊 Oceanic</option>
+                </select>
+            </div>
+            <div class="auth-buttons" id="authSection">
+                <!-- Dynamically populated by JS based on auth state -->
+                <button id="loginBtn">Log In</button>
+                <button id="signupBtn" style="background: var(--primary-color); border-color: var(--primary-color);">Sign Up</button>
+            </div>
         </div>
     </header>
 
