@@ -83,7 +83,7 @@ function renderFeed() {
         <div class="item-card" onclick="focusOnMap(${item.latitude}, ${item.longitude})">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
-                ${currentUser && (currentUser.id === item.owner_id || currentUser.is_admin) ? 
+                ${currentUser && currentUser.id === item.owner_id ? 
                     `<button class="delete-btn" onclick="event.stopPropagation(); handleDelete(${item.id})">×</button>` : ''}
             </div>
             <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">${item.title}</h3>
@@ -130,7 +130,7 @@ function renderMarkers() {
             <div style="padding: 5px; min-width: 150px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
                     <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
-                    ${currentUser && (currentUser.id === item.owner_id || currentUser.is_admin) ? 
+                    ${currentUser && currentUser.id === item.owner_id ? 
                         `<button class="delete-btn" onclick="handleDelete(${item.id})" title="Delete item">×</button>` : ''}
                 </div>
                 <h4 style="margin: 5px 0;">${item.title}</h4>

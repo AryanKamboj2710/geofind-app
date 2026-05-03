@@ -23,7 +23,6 @@ class Item(ItemBase):
 class UserBase(BaseModel):
     email: str
     name: str
-    is_admin: bool = False
 
 class UserCreate(UserBase):
     password: str

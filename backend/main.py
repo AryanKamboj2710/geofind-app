@@ -57,8 +57,7 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
     hashed_password = auth.get_password_hash(user.password)
-    is_admin = (user.email.lower() == "admin@geofind.com")
-    db_user = models.User(email=user.email, hashed_password=hashed_password, name=user.name, is_admin=is_admin)
+    db_user = models.User(email=user.email, hashed_password=hashed_password, name=user.name)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -101,7 +100,7 @@ def delete_item(item_id: int, db: Session = Depends(get_db), current_user: model
     db_item = db.query(models.Item).filter(models.Item.id == item_id).first()
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
-    if db_item.owner_id != current_user.id and not current_user.is_admin:
+    if db_item.owner_id != current_user.id:
         raise HTTPException(status_code=403, detail="Not authorized to delete this item")
     db.delete(db_item)
     db.commit()
