@@ -7,7 +7,7 @@ let token = localStorage.getItem('token');
 let tempMarker = null;
 
 // DOM Elements (Selected after DOM is ready)
-let authSection, feedContainer, reportBtn, themeToggle;
+let authSection, feedContainer, reportBtn;
 let authModal, reportModal, authForm, authTitle, authSubmitBtn, toggleAuthModeBtn, nameGroup, authToggleText;
 
 // Auth Form Elements (Selected after DOM is ready)
@@ -218,20 +218,6 @@ function openAuthModal(login = true) {
 
 
 
-// Theme Management
-function setTheme(isLight) {
-    if (isLight) {
-        document.body.classList.add('light-theme');
-    } else {
-        document.body.classList.remove('light-theme');
-    }
-
-    // Save to localStorage
-    localStorage.setItem('themePreference', isLight ? 'light' : 'dark');
-    
-    // Update toggle state
-    if (themeToggle) themeToggle.checked = isLight;
-}
 
 async function handleDelete(itemId) {
     if (!confirm("Are you sure you want to delete this item?")) return;
@@ -258,23 +244,12 @@ document.addEventListener('DOMContentLoaded', () => {
     reportBtn = document.getElementById('reportBtn');
     authModal = document.getElementById('authModal');
     reportModal = document.getElementById('reportModal');
-    themeToggle = document.getElementById('themeToggle');
     authForm = document.getElementById('authForm');
     authTitle = document.getElementById('authTitle');
     authSubmitBtn = document.getElementById('authSubmitBtn');
     toggleAuthModeBtn = document.getElementById('toggleAuthMode');
     nameGroup = document.getElementById('nameGroup');
     authToggleText = document.getElementById('authToggleText');
-
-    // Initialize theme first to avoid flash
-    const savedTheme = localStorage.getItem('themePreference') || 'dark';
-    setTheme(savedTheme === 'light');
-
-    if (themeToggle) {
-        themeToggle.addEventListener('change', (e) => {
-            setTheme(e.target.checked);
-        });
-    }
 
     // Modal Close Listeners
     document.getElementById('closeAuthModal').addEventListener('click', () => authModal.classList.remove('active'));
