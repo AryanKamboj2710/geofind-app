@@ -22,11 +22,11 @@ function initMap() {
         maxBoundsViscosity: 1.0
     }).setView([51.505, -0.09], 13);
  
-    // Standard street map view (OpenStreetMap)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Sleek Dark Map View (CartoDB Dark Matter)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         noWrap: true,
         bounds: [[-90, -180], [90, 180]],
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
     }).addTo(map);
 
     // Try to get user's location
