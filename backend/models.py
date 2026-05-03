@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 import datetime
 from database import Base
@@ -10,6 +10,7 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     name = Column(String)
+    is_admin = Column(Boolean, default=False)
 
     items = relationship("Item", back_populates="owner")
 

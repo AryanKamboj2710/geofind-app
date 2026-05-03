@@ -6,23 +6,12 @@ let currentUser = null;
 let token = localStorage.getItem('token');
 let tempMarker = null;
 
-// DOM Elements
-const authSection = document.getElementById('authSection');
-const feedContainer = document.getElementById('feedContainer');
-const reportBtn = document.getElementById('reportBtn');
+// DOM Elements (Selected after DOM is ready)
+let authSection, feedContainer, reportBtn, themeToggle;
+let authModal, reportModal, authForm, authTitle, authSubmitBtn, toggleAuthModeBtn, nameGroup, authToggleText;
 
-// Modals
-const authModal = document.getElementById('authModal');
-const reportModal = document.getElementById('reportModal');
-const themeToggle = document.getElementById('themeToggle');
-
-// Auth Form Elements
-const authForm = document.getElementById('authForm');
-const authTitle = document.getElementById('authTitle');
-const authSubmitBtn = document.getElementById('authSubmitBtn');
-const toggleAuthModeBtn = document.getElementById('toggleAuthMode');
-const nameGroup = document.getElementById('nameGroup');
-const authToggleText = document.getElementById('authToggleText');
+// Auth Form Elements (Selected after DOM is ready)
+let isLoginMode = true;
 
 let isLoginMode = true;
 
@@ -96,7 +85,7 @@ function renderFeed() {
         <div class="item-card" onclick="focusOnMap(${item.latitude}, ${item.longitude})">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
-                ${currentUser && currentUser.id === item.owner_id ? 
+                ${currentUser && (currentUser.id === item.owner_id || currentUser.is_admin) ? 
                     `<button class="delete-btn" onclick="event.stopPropagation(); handleDelete(${item.id})">×</button>` : ''}
             </div>
             <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">${item.title}</h3>
@@ -143,7 +132,7 @@ function renderMarkers() {
             <div style="padding: 5px; min-width: 150px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
                     <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
-                    ${currentUser && currentUser.id === item.owner_id ? 
+                    ${currentUser && (currentUser.id === item.owner_id || currentUser.is_admin) ? 
                         `<button class="delete-btn" onclick="handleDelete(${item.id})" title="Delete item">×</button>` : ''}
                 </div>
                 <h4 style="margin: 5px 0;">${item.title}</h4>
@@ -228,105 +217,8 @@ function openAuthModal(login = true) {
     authModal.classList.add('active');
 }
 
-document.getElementById('closeAuthModal').addEventListener('click', () => authModal.classList.remove('active'));
-document.getElementById('closeReportModal').addEventListener('click', () => {
-    reportModal.classList.remove('active');
-    if (tempMarker) map.removeLayer(tempMarker);
-});
 
-reportBtn.addEventListener('click', () => {
-    alert("Click anywhere on the map to drop a pin and report an item.");
-});
 
-// Form Submissions
-authForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    
-    try {
-        if (isLoginMode) {
-            // Login uses OAuth2PasswordRequestForm which requires URL encoded form data
-            const formData = new URLSearchParams();
-            formData.append('username', email);
-            formData.append('password', password);
-            
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData
-            });
-            
-            if (!res.ok) throw new Error("Login failed");
-            const data = await res.json();
-            token = data.access_token;
-            localStorage.setItem('token', token);
-        } else {
-            // Registration uses JSON
-            const name = document.getElementById('name').value;
-            const res = await fetch('/api/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, name })
-            });
-            
-            if (!res.ok) throw new Error("Registration failed");
-            
-            // Auto login after register
-            const formData = new URLSearchParams();
-            formData.append('username', email);
-            formData.append('password', password);
-            const loginRes = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData
-            });
-            const data = await loginRes.json();
-            token = data.access_token;
-            localStorage.setItem('token', token);
-        }
-        
-        authModal.classList.remove('active');
-        authForm.reset();
-        await checkAuth();
-    } catch (err) {
-        alert(err.message);
-    }
-});
-
-document.getElementById('reportForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!token) return alert("Please log in first");
-
-    const payload = {
-        title: document.getElementById('itemTitle').value,
-        description: document.getElementById('itemDescription').value,
-        status: document.getElementById('itemStatus').value,
-        latitude: parseFloat(document.getElementById('itemLat').value),
-        longitude: parseFloat(document.getElementById('itemLng').value),
-        contact_number: document.getElementById('itemContact').value
-    };
-
-    try {
-        const res = await fetch('/api/items', {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) throw new Error("Failed to report item");
-        
-        reportModal.classList.remove('active');
-        document.getElementById('reportForm').reset();
-        tempMarker = null; // Keep the real marker that gets fetched
-        await loadItems();
-    } catch (err) {
-        alert(err.message);
-    }
-});
 
 // Theme Management
 function setTheme(isLight) {
@@ -362,6 +254,20 @@ async function handleDelete(itemId) {
 
 // Initialization
 document.addEventListener('DOMContentLoaded', () => {
+    // Select Elements
+    authSection = document.getElementById('authSection');
+    feedContainer = document.getElementById('feedContainer');
+    reportBtn = document.getElementById('reportBtn');
+    authModal = document.getElementById('authModal');
+    reportModal = document.getElementById('reportModal');
+    themeToggle = document.getElementById('themeToggle');
+    authForm = document.getElementById('authForm');
+    authTitle = document.getElementById('authTitle');
+    authSubmitBtn = document.getElementById('authSubmitBtn');
+    toggleAuthModeBtn = document.getElementById('toggleAuthMode');
+    nameGroup = document.getElementById('nameGroup');
+    authToggleText = document.getElementById('authToggleText');
+
     // Initialize theme first to avoid flash
     const savedTheme = localStorage.getItem('themePreference') || 'dark';
     setTheme(savedTheme === 'light');
@@ -372,6 +278,108 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Modal Close Listeners
+    document.getElementById('closeAuthModal').addEventListener('click', () => authModal.classList.remove('active'));
+    document.getElementById('closeReportModal').addEventListener('click', () => {
+        reportModal.classList.remove('active');
+        if (tempMarker) map.removeLayer(tempMarker);
+    });
+
+    reportBtn.addEventListener('click', () => {
+        alert("Click anywhere on the map to drop a pin and report an item.");
+    });
+
+    // Form Listener
+    authForm.addEventListener('submit', handleAuthSubmit);
+    document.getElementById('reportForm').addEventListener('submit', handleReportSubmit);
+
     initMap();
     checkAuth();
 });
+
+// Refactored Handlers for better organization
+async function handleAuthSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    try {
+        if (isLoginMode) {
+            const formData = new URLSearchParams();
+            formData.append('username', email);
+            formData.append('password', password);
+            
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            
+            if (!res.ok) throw new Error("Login failed");
+            const data = await res.json();
+            token = data.access_token;
+            localStorage.setItem('token', token);
+        } else {
+            const name = document.getElementById('name').value;
+            const res = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, name })
+            });
+            
+            if (!res.ok) throw new Error("Registration failed");
+            
+            const formData = new URLSearchParams();
+            formData.append('username', email);
+            formData.append('password', password);
+            const loginRes = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            const data = await loginRes.json();
+            token = data.access_token;
+            localStorage.setItem('token', token);
+        }
+        
+        authModal.classList.remove('active');
+        authForm.reset();
+        await checkAuth();
+    } catch (err) {
+        alert(err.message);
+    }
+}
+
+async function handleReportSubmit(e) {
+    e.preventDefault();
+    if (!token) return alert("Please log in first");
+
+    const payload = {
+        title: document.getElementById('itemTitle').value,
+        description: document.getElementById('itemDescription').value,
+        status: document.getElementById('itemStatus').value,
+        latitude: parseFloat(document.getElementById('itemLat').value),
+        longitude: parseFloat(document.getElementById('itemLng').value),
+        contact_number: document.getElementById('itemContact').value
+    };
+
+    try {
+        const res = await fetch('/api/items', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error("Failed to report item");
+        
+        reportModal.classList.remove('active');
+        document.getElementById('reportForm').reset();
+        tempMarker = null;
+        await loadItems();
+    } catch (err) {
+        alert(err.message);
+    }
+}
