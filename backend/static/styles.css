@@ -1,8 +1,8 @@
 :root {
   /* Version: 1.2 - Extreme Black Theme */
   /* Default: Pure Black & Neon Cyan */
-  --primary-color: #4e7274; /* Neon Cyan */
-  --primary-hover: #00d8e6;
+  --primary-color: #00f2ff; /* Neon Cyan */
+  --primary-hover: #04c0cd;
   --bg-color: #000000; /* Pure Black */
   --surface-color: #0a0a0a; /* Slightly lighter black for containers */ 
   --text-color: #ffffff;
