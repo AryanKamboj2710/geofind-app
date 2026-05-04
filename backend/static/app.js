@@ -6,11 +6,6 @@ let currentUser = null;
 let token = localStorage.getItem('token');
 let tempMarker = null;
 
-// Supabase Configuration (REPLACE THESE WITH YOUR ACTUAL KEYS)
-const SUPABASE_URL = 'https://jydtzsanrzcurakxygst.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5ZHR6c2FucnpjdXJha3h5Z3N0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NzMwMTMsImV4cCI6MjA5MzQ0OTAxM30.2Zb9iCiln4gX_e-ptEW85aD-QmULnV8WPTi-eWBimPs';
-const supabaseClient = (typeof supabase !== 'undefined' && supabase.createClient) ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-
 // DOM Elements (Selected after DOM is ready)
 let authSection, feedContainer, reportBtn;
 let authModal, reportModal, authForm, authTitle, authSubmitBtn, toggleAuthModeBtn, nameGroup, authToggleText;
@@ -92,7 +87,6 @@ function renderFeed() {
             `<button class="delete-btn" onclick="event.stopPropagation(); handleDelete(${item.id})">×</button>` : ''}
             </div>
             <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">${item.title}</h3>
-            ${item.image_url ? `<img src="${item.image_url}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 0.75rem; border: 1px solid var(--border-color);">` : ''}
             <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">${item.description}</p>
             <div style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-color);">
                 <strong>Contact:</strong> ${item.contact_number}
@@ -140,7 +134,6 @@ function renderMarkers() {
                 `<button class="delete-btn" onclick="handleDelete(${item.id})" title="Delete item">×</button>` : ''}
                 </div>
                 <h4 style="margin: 5px 0;">${item.title}</h4>
-                ${item.image_url ? `<img src="${item.image_url}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin: 5px 0;">` : ''}
                 <p style="margin: 0; font-size: 0.85rem;">${item.description}</p>
                 <div style="margin-top: 8px; font-size: 0.85rem; color: var(--primary-color);">
                     <strong>Call:</strong> ${item.contact_number}
@@ -350,30 +343,8 @@ async function handleReportSubmit(e) {
         status: document.getElementById('itemStatus').value,
         latitude: parseFloat(document.getElementById('itemLat').value),
         longitude: parseFloat(document.getElementById('itemLng').value),
-        contact_number: document.getElementById('itemContact').value,
-        image_url: null
+        contact_number: document.getElementById('itemContact').value
     };
-
-    const imageFile = document.getElementById('itemImage').files[0];
-    if (imageFile && supabaseClient) {
-        try {
-            const fileName = `${Date.now()}-${imageFile.name}`;
-            const { data, error } = await supabaseClient.storage
-                .from('item-photos')
-                .upload(fileName, imageFile);
-            
-            if (error) throw error;
-            
-            const { data: publicUrlData } = supabaseClient.storage
-                .from('item-photos')
-                .getPublicUrl(fileName);
-                
-            payload.image_url = publicUrlData.publicUrl;
-        } catch (err) {
-            console.error("Image upload failed:", err);
-            alert("Image upload failed, but we will try to submit the report anyway.");
-        }
-    }
 
     try {
         const res = await fetch('/api/items', {
