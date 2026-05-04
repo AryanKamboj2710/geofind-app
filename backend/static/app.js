@@ -284,9 +284,12 @@ async function openInbox() {
 
         inboxContent.innerHTML = Object.values(convos).map(m => {
             const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+            const item = items.find(i => i.id === m.item_id);
+            const itemTitle = item ? item.title : `Item #${m.item_id}`;
+            
             return `
-                <div class="inbox-item" onclick="openChat(${otherId}, ${m.item_id}, 'Conversation')">
-                    <div style="font-weight: 600; margin-bottom: 4px;">Item #${m.item_id}</div>
+                <div class="inbox-item" onclick="openChat(${otherId}, ${m.item_id}, '${itemTitle.replace(/'/g, "\\'")}')">
+                    <div style="font-weight: 600; margin-bottom: 4px;">${itemTitle}</div>
                     <div style="font-size: 0.85rem; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.content}</div>
                     <small style="opacity: 0.5;">${new Date(m.timestamp).toLocaleString()}</small>
                 </div>
