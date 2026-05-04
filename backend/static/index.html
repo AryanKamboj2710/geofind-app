@@ -16,6 +16,7 @@
             <h1>Foundly</h1>
         </div>
         <div class="header-actions">
+                        <button id="hamburgerBtn" class="hamburger" style="background:none; border:none; font-size:1.5rem; color:var(--text-color); margin-left:1rem;" aria-label="Menu">&#9776;</button>
             <div id="authSection" class="auth-buttons">
                 <button onclick="openModal('authModal')">Log In</button>
                 <button class="btn-primary" onclick="openModal('authModal', false)">Sign Up</button>
@@ -44,9 +45,18 @@
                     <input type="text" id="searchInput" placeholder="Search items..." style="padding-left: 2.5rem;">
                 </div>
             </div>
-            <div id="feedContainer" class="sidebar-content">
-                <!-- Items will be loaded here -->
+        <div id="mobileMenu" class="mobile-menu" style="display:none;">
+            <button id="closeMobileMenu" class="close-mobile" style="background:none; border:none; font-size:1.5rem; color:var(--text-color); position:absolute; top:1rem; right:1rem;">&times;</button>
+            <div class="filter-tabs" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="lost">Lost</button>
+                <button class="filter-btn" data-filter="found">Found</button>
             </div>
+            <div class="search-container" style="margin-top: 1rem; position: relative;">
+                <span class="search-icon">🔍</span>
+                                <input type="text" id="searchInputMobile" placeholder="Search items..." style="padding-left: 2.5rem;" />
+            </div>
+        </div>
             <div id="sidebarFooter" class="sidebar-footer" style="display: none;">
                 <div class="user-info">
                     <div class="user-avatar" id="userAvatar">?</div>
