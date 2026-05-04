@@ -223,6 +223,8 @@ h1 {
   padding: 2.5rem;
   width: 100%;
   max-width: 450px;
+  max-height: 90vh; /* Don't exceed screen height */
+  overflow-y: auto; /* Enable scrolling for long forms */
   position: relative;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
   animation: modalAppear 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -426,32 +428,17 @@ header {
 
   .sidebar {
     width: 100% !important;
-    height: 40vh !important; /* Sidebar takes bottom */
-    border-right: none !important;
-    border-top: 1px solid var(--border-color) !important;
+    height: 50vh !important; /* Increase height for mobile */
+    border: none !important;
+    border-top: 2px solid var(--border-color) !important;
     order: 2 !important;
     flex: none !important;
-  }
-
-  .map-container {
-    width: 100% !important;
-    height: 60vh !important; /* Map takes top */
-    order: 1 !important;
-    flex: none !important;
-    display: block !important;
-  }
-
-  #map {
-    height: 100% !important;
-    width: 100% !important;
-  }
-
-  .sidebar-header {
-    padding: 1rem !important;
+    border-radius: 1.5rem 1.5rem 0 0 !important; /* Round only top corners */
   }
 
   .modal-content {
     width: 95% !important;
+    padding: 1.5rem !important;
     margin: 10px !important;
   }
 }
