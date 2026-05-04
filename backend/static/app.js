@@ -151,14 +151,21 @@ async function checkAuth() {
 }
 
 function updateAuthUI(isLoggedIn) {
+    const sidebarFooter = document.getElementById('sidebarFooter');
     if (isLoggedIn) {
-        authSection.innerHTML = `<span>Hi, ${currentUser.name}</span><button onclick="handleLogout()" class="btn-secondary" style="margin-left: 1rem;">Log Out</button>`;
+        authSection.innerHTML = `<span>Welcome back!</span>`;
         reportBtn.style.display = 'block';
         inboxBtn.style.display = 'block';
+        
+        // Sidebar Profile
+        sidebarFooter.style.display = 'flex';
+        document.getElementById('userNameDisplay').textContent = currentUser.name || currentUser.email;
+        document.getElementById('userAvatar').textContent = (currentUser.name || currentUser.email).charAt(0).toUpperCase();
     } else {
         authSection.innerHTML = `<button onclick="openAuthModal(true)">Log In</button><button class="btn-primary" onclick="openAuthModal(false)" style="margin-left: 10px;">Sign Up</button>`;
         reportBtn.style.display = 'none';
         inboxBtn.style.display = 'none';
+        sidebarFooter.style.display = 'none';
     }
     renderFeed();
     renderMarkers();

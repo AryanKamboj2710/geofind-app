@@ -39,12 +39,23 @@
                     <button class="filter-btn" data-filter="lost">Lost</button>
                     <button class="filter-btn" data-filter="found">Found</button>
                 </div>
-                <div class="search-container" style="margin-top: 1rem;">
-                    <input type="text" id="searchInput" placeholder="Search items (e.g. iPhone, Keys)...">
+                <div class="search-container" style="margin-top: 1rem; position: relative;">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search items..." style="padding-left: 2.5rem;">
                 </div>
             </div>
             <div id="feedContainer" class="sidebar-content">
                 <!-- Items will be loaded here -->
+            </div>
+            <div id="sidebarFooter" class="sidebar-footer" style="display: none;">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-details">
+                        <span id="userNameDisplay">User Name</span>
+                        <small>Active Now</small>
+                    </div>
+                </div>
+                <button onclick="handleLogout()" class="logout-shortcut" title="Log Out">🔓</button>
             </div>
         </div>
         <div id="map-container" class="map-container">

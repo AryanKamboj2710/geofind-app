@@ -13,6 +13,22 @@
   --border-color: #333333; /* Stronger, more visible gray */
   --header-gradient: linear-gradient(to right, #00eeff, #6f00ff);
   --btn-gradient: linear-gradient(135deg, var(--primary-color), #00ff9d);
+  --glass-bg: rgba(15, 15, 15, 0.7);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
 }
 
 * {
@@ -601,6 +617,15 @@ header {
 }
 
 /* Search Bar Styling */
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9rem;
+  opacity: 0.5;
+}
+
 .search-container input {
   width: 100%;
   background: rgba(255, 255, 255, 0.05);
@@ -646,4 +671,68 @@ header {
   font-weight: 700;
   font-size: 0.7rem;
   text-transform: uppercase;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 1.25rem;
+  border-top: 1px solid var(--border-color);
+  background: rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--header-gradient);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-details span {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.user-details small {
+  font-size: 0.65rem;
+  color: var(--found-color);
+}
+
+.logout-shortcut {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-shortcut:hover {
+  border-color: var(--lost-color);
+  color: var(--lost-color);
+  background: rgba(255, 45, 85, 0.1);
 }
