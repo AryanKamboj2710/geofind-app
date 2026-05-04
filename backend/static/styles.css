@@ -4,7 +4,7 @@
   --primary-color: #52dde5; /* Neon Cyan */
   --primary-hover: #474747;
   --bg-color: #000000; 
-  --bg-gradient: linear-gradient(135deg, #000000 0%, #001214 40%, #0a001a 70%, #000000 100%);
+  --bg-gradient: linear-gradient(135deg, #00bcc9 0%, #00909b 40%, #13002b 70%, #6f00ff 100%);
   --surface-color: rgba(10, 10, 10, 0.8); /* Make surface slightly transparent for the glass effect */ 
   --text-color: #ffffff;
   --text-muted: #a1a1aa; /* Zinc 400 */
@@ -76,6 +76,7 @@ h1 {
   cursor: pointer;
   margin-left: 0.5rem;
   transition: all 0.2s ease;
+  white-space: nowrap; /* Prevent text from breaking into two lines */
 }
 
 .auth-buttons button:hover {
