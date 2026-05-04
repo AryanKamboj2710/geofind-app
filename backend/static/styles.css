@@ -375,63 +375,44 @@ header {
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .main-container {
-    flex-direction: column;
-    height: calc(100vh - 60px);
-    overflow: hidden;
+    flex-direction: column !important;
+    height: calc(100vh - 60px) !important;
+    overflow: hidden !important;
+    display: flex !important;
   }
 
   header {
-    padding: 0.75rem 1rem;
-  }
-
-  h1 {
-    font-size: 1.2rem;
-  }
-
-  .header-actions {
-    gap: 0.5rem;
-  }
-
-  .auth-buttons button {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.85rem;
-    margin-left: 0.25rem;
+    padding: 0.75rem 1rem !important;
   }
 
   .sidebar {
-    width: 100%;
-    height: 40vh; /* Sidebar takes bottom part of screen */
-    border-right: none;
-    border-top: 1px solid var(--border-color);
-    order: 2;
+    width: 100% !important;
+    height: 40vh !important; /* Sidebar takes bottom */
+    border-right: none !important;
+    border-top: 1px solid var(--border-color) !important;
+    order: 2 !important;
+    flex: none !important;
   }
 
   .map-container {
-    flex: none;
-    height: 60vh; /* Map takes top part of screen */
-    order: 1;
+    width: 100% !important;
+    height: 60vh !important; /* Map takes top */
+    order: 1 !important;
+    flex: none !important;
+    display: block !important;
+  }
+
+  #map {
+    height: 100% !important;
+    width: 100% !important;
   }
 
   .sidebar-header {
-    padding: 1rem;
-  }
-
-  .sidebar-header h2 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  #reportBtn {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-  }
-
-  .sidebar-content {
-    padding: 1rem;
+    padding: 1rem !important;
   }
 
   .modal-content {
-    width: 90%;
-    padding: 1.5rem;
+    width: 95% !important;
+    margin: 10px !important;
   }
 }
