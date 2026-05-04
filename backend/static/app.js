@@ -223,6 +223,7 @@ async function handleDelete(itemId) {
 
 // Chat Logic
 async function openChat(otherUserId, itemId, itemTitle) {
+    inboxModal.classList.remove('active'); // Automatically hide inbox when opening a chat
     activeChatUserId = otherUserId;
     activeChatItemId = itemId;
     chatTitle.textContent = `Chat: ${itemTitle}`;
