@@ -10,6 +10,7 @@ let activeChatUserId = null;
 let activeChatItemId = null;
 let lastMessageCount = 0;
 let currentFilter = 'all';
+let searchQuery = '';
 let notifBadge, toastContainer;
 
 // DOM Elements
@@ -67,9 +68,12 @@ async function loadItems() {
 
 function renderFeed() {
     // Sort and Filter items
-    const filteredItems = items.filter(item => 
-        currentFilter === 'all' || item.status === currentFilter
-    );
+    const filteredItems = items.filter(item => {
+        const matchesFilter = currentFilter === 'all' || item.status === currentFilter;
+        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             item.description.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesFilter && matchesSearch;
+    });
     const sortedItems = [...filteredItems].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     if (sortedItems.length === 0) {
@@ -99,9 +103,12 @@ function renderMarkers() {
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
     
-    const filteredItems = items.filter(item => 
-        currentFilter === 'all' || item.status === currentFilter
-    );
+    const filteredItems = items.filter(item => {
+        const matchesFilter = currentFilter === 'all' || item.status === currentFilter;
+        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             item.description.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesFilter && matchesSearch;
+    });
 
     filteredItems.forEach(item => {
         const color = item.status === 'lost' ? '#ef4444' : '#10b981';
@@ -388,6 +395,13 @@ document.addEventListener('DOMContentLoaded', () => {
             renderFeed();
             renderMarkers();
         });
+    });
+
+    // Search Listener
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderFeed();
+        renderMarkers();
     });
 
     initMap();
