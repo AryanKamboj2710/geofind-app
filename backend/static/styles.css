@@ -371,3 +371,67 @@ h1 {
 header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+    height: calc(100vh - 60px);
+    overflow: hidden;
+  }
+
+  header {
+    padding: 0.75rem 1rem;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+  }
+
+  .header-actions {
+    gap: 0.5rem;
+  }
+
+  .auth-buttons button {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.85rem;
+    margin-left: 0.25rem;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: 40vh; /* Sidebar takes bottom part of screen */
+    border-right: none;
+    border-top: 1px solid var(--border-color);
+    order: 2;
+  }
+
+  .map-container {
+    flex: none;
+    height: 60vh; /* Map takes top part of screen */
+    order: 1;
+  }
+
+  .sidebar-header {
+    padding: 1rem;
+  }
+
+  .sidebar-header h2 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  #reportBtn {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .sidebar-content {
+    padding: 1rem;
+  }
+
+  .modal-content {
+    width: 90%;
+    padding: 1.5rem;
+  }
+}
