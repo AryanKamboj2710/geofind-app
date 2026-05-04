@@ -21,7 +21,7 @@ function initMap() {
         maxBounds: [[-90, -180], [90, 180]],
         maxBoundsViscosity: 1.0
     }).setView([51.505, -0.09], 13);
- 
+
     // zSleek Dark Map View (CartoDB Dark Matter)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         noWrap: true,
@@ -38,15 +38,15 @@ function initMap() {
     }
 
     // Map click event for reporting
-    map.on('click', function(e) {
+    map.on('click', function (e) {
         if (!currentUser) return; // Only logged in users can report
-        
+
         if (tempMarker) {
             map.removeLayer(tempMarker);
         }
-        
+
         tempMarker = L.marker(e.latlng).addTo(map);
-        
+
         // Open report modal and pre-fill coordinates
         document.getElementById('itemLat').value = e.latlng.lat.toFixed(6);
         document.getElementById('itemLng').value = e.latlng.lng.toFixed(6);
@@ -83,8 +83,8 @@ function renderFeed() {
         <div class="item-card" onclick="focusOnMap(${item.latitude}, ${item.longitude})">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
-                ${currentUser && currentUser.id === item.owner_id ? 
-                    `<button class="delete-btn" onclick="event.stopPropagation(); handleDelete(${item.id})">×</button>` : ''}
+                ${currentUser && currentUser.id === item.owner_id ?
+            `<button class="delete-btn" onclick="event.stopPropagation(); handleDelete(${item.id})">×</button>` : ''}
             </div>
             <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">${item.title}</h3>
             <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">${item.description}</p>
@@ -104,7 +104,7 @@ function renderMarkers() {
 
     items.forEach(item => {
         const color = item.status === 'lost' ? '#ef4444' : '#10b981';
-        
+
         const markerHtmlStyles = `
             background-color: ${color};
             width: 1.5rem;
@@ -117,7 +117,7 @@ function renderMarkers() {
             border: 2px solid #FFFFFF;
             box-shadow: 0 0 10px ${color};
         `;
-        
+
         const icon = L.divIcon({
             className: "custom-pin",
             iconAnchor: [0, 0],
@@ -130,8 +130,8 @@ function renderMarkers() {
             <div style="padding: 5px; min-width: 150px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
                     <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
-                    ${currentUser && currentUser.id === item.owner_id ? 
-                        `<button class="delete-btn" onclick="handleDelete(${item.id})" title="Delete item">×</button>` : ''}
+                    ${currentUser && currentUser.id === item.owner_id ?
+                `<button class="delete-btn" onclick="handleDelete(${item.id})" title="Delete item">×</button>` : ''}
                 </div>
                 <h4 style="margin: 5px 0;">${item.title}</h4>
                 <p style="margin: 0; font-size: 0.85rem;">${item.description}</p>
@@ -144,7 +144,7 @@ function renderMarkers() {
         const marker = L.marker([item.latitude, item.longitude], { icon })
             .bindPopup(popupContent)
             .addTo(map);
-            
+
         markers.push(marker);
     });
 }
@@ -161,7 +161,7 @@ async function checkAuth() {
         const response = await fetch('/api/me', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
-        
+
         if (response.ok) {
             currentUser = await response.json();
             updateAuthUI(true);
@@ -204,13 +204,13 @@ function openAuthModal(login = true) {
     authTitle.textContent = isLoginMode ? 'Log In' : 'Sign Up';
     authSubmitBtn.textContent = isLoginMode ? 'Log In' : 'Sign Up';
     nameGroup.style.display = isLoginMode ? 'none' : 'block';
-    if(!isLoginMode) document.getElementById('name').setAttribute('required', 'true');
+    if (!isLoginMode) document.getElementById('name').setAttribute('required', 'true');
     else document.getElementById('name').removeAttribute('required');
-    
-    authToggleText.innerHTML = isLoginMode 
+
+    authToggleText.innerHTML = isLoginMode
         ? 'Don\'t have an account? <span id="toggleAuthMode">Sign Up</span>'
         : 'Already have an account? <span id="toggleAuthMode">Log In</span>';
-        
+
     document.getElementById('toggleAuthMode').addEventListener('click', () => openAuthModal(!isLoginMode));
     authModal.classList.add('active');
 }
@@ -229,7 +229,7 @@ async function handleDelete(itemId) {
         });
 
         if (!res.ok) throw new Error("Failed to delete item");
-        
+
         await loadItems();
     } catch (err) {
         alert(err.message);
@@ -275,19 +275,19 @@ async function handleAuthSubmit(e) {
     e.preventDefault();
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    
+
     try {
         if (isLoginMode) {
             const formData = new URLSearchParams();
             formData.append('username', email);
             formData.append('password', password);
-            
+
             const res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData
             });
-            
+
             if (!res.ok) {
                 const errorData = await res.json();
                 throw new Error(errorData.detail || "Login failed");
@@ -302,12 +302,12 @@ async function handleAuthSubmit(e) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password, name })
             });
-            
+
             if (!res.ok) {
                 const errorData = await res.json();
                 throw new Error(errorData.detail || "Registration failed");
             }
-            
+
             const formData = new URLSearchParams();
             formData.append('username', email);
             formData.append('password', password);
@@ -316,14 +316,14 @@ async function handleAuthSubmit(e) {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData
             });
-            
+
             if (!loginRes.ok) throw new Error("Auto-login failed after registration");
-            
+
             const data = await loginRes.json();
             token = data.access_token;
             localStorage.setItem('token', token);
         }
-        
+
         authModal.classList.remove('active');
         authForm.reset();
         await checkAuth();
@@ -349,7 +349,7 @@ async function handleReportSubmit(e) {
     try {
         const res = await fetch('/api/items', {
             method: 'POST',
-            headers: { 
+            headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
@@ -357,7 +357,7 @@ async function handleReportSubmit(e) {
         });
 
         if (!res.ok) throw new Error("Failed to report item");
-        
+
         reportModal.classList.remove('active');
         document.getElementById('reportForm').reset();
         tempMarker = null;

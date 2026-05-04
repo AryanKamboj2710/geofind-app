@@ -24,6 +24,7 @@ class Item(Base):
     latitude = Column(Float)
     longitude = Column(Float)
     contact_number = Column(String)
+    image_url = Column(String, nullable=True)
     created_at = Column(DateTime, default=lambda: datetime.datetime.now(datetime.timezone.utc))
     owner_id = Column(Integer, ForeignKey("users.id"))
 

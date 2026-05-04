@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,9 +8,11 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="/static/styles.css">
 </head>
+
 <body>
     <header>
         <h1>GeoFind</h1>
@@ -17,7 +20,8 @@
             <div class="auth-buttons" id="authSection">
                 <!-- Dynamically populated by JS based on auth state -->
                 <button id="loginBtn">Log In</button>
-                <button id="signupBtn" style="background: var(--primary-color); border-color: var(--primary-color);">Sign Up</button>
+                <button id="signupBtn"
+                    style="background: var(--primary-color); border-color: var(--primary-color);">Sign Up</button>
             </div>
         </div>
     </header>
@@ -74,7 +78,8 @@
                 <button class="close-btn" id="closeReportModal">&times;</button>
             </div>
             <form id="reportForm">
-                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Click on the map to set the exact location, then fill out this form.</p>
+                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Click on the map to set
+                    the exact location, then fill out this form.</p>
                 <div class="form-group">
                     <label for="itemStatus">Status</label>
                     <select id="itemStatus" required>
@@ -88,7 +93,8 @@
                 </div>
                 <div class="form-group">
                     <label for="itemDescription">Description</label>
-                    <textarea id="itemDescription" rows="3" required placeholder="Provide distinguishing details..."></textarea>
+                    <textarea id="itemDescription" rows="3" required
+                        placeholder="Provide distinguishing details..."></textarea>
                 </div>
                 <div class="form-group">
                     <label for="itemContact">Contact Number</label>
@@ -110,7 +116,9 @@
     </div>
 
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="/static/app.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="staic/app.js"></script>
 </body>
+
 </html>
