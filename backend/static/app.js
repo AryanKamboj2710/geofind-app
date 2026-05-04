@@ -9,11 +9,6 @@ let currentChatInterval = null;
 let activeChatUserId = null;
 let activeChatItemId = null;
 
-// Supabase Configuration (REPLACE THESE WITH YOUR ACTUAL KEYS)
-const SUPABASE_URL = 'https://jydtzsanrzcurakxygst.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5ZHR6c2FucnpjdXJha3h5Z3N0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NzMwMTMsImV4cCI6MjA5MzQ0OTAxM30.2Zb9iCiln4gX_e-ptEW85aD-QmULnV8WPTi-eWBimPs';
-const supabaseClient = (typeof supabase !== 'undefined' && supabase.createClient) ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
-
 // DOM Elements
 let authSection, feedContainer, reportBtn, inboxBtn;
 let authModal, reportModal, chatModal, inboxModal;
@@ -81,7 +76,6 @@ function renderFeed() {
             `<button class="delete-btn" onclick="event.stopPropagation(); handleDelete(${item.id})">×</button>` : ''}
             </div>
             <h3 style="margin: 0.5rem 0;">${item.title}</h3>
-            ${item.image_url ? `<img src="${item.image_url}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 0.75rem;">` : ''}
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">${item.description}</p>
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <small style="opacity: 0.6;">${new Date(item.created_at).toLocaleDateString()}</small>
@@ -107,7 +101,6 @@ function renderMarkers() {
         const popupContent = `
             <div style="padding: 5px; min-width: 150px;">
                 <h4 style="margin: 0 0 5px 0;">${item.title}</h4>
-                <p style="margin: 0 0 8px 0; font-size: 0.8rem;">${item.description}</p>
                 ${currentUser && currentUser.id !== item.owner_id ? 
                     `<button class="btn-primary" style="width: 100%; padding: 4px; font-size: 0.8rem;" onclick="openChat(${item.owner_id}, ${item.id}, '${item.title.replace(/'/g, "\\'")}')">Message Owner</button>` : 
                     `<small style="color: var(--primary-color);">Your Item</small>`}
@@ -204,19 +197,8 @@ async function handleReportSubmit(e) {
         status: document.getElementById('itemStatus').value,
         latitude: parseFloat(document.getElementById('itemLat').value),
         longitude: parseFloat(document.getElementById('itemLng').value),
-        contact_number: document.getElementById('itemContact').value,
-        image_url: null
+        contact_number: document.getElementById('itemContact').value
     };
-
-    const imageFile = document.getElementById('itemImage').files[0];
-    if (imageFile && supabaseClient) {
-        try {
-            const fileName = `${Date.now()}-${imageFile.name}`;
-            await supabaseClient.storage.from('item-photos').upload(fileName, imageFile);
-            const { data } = supabaseClient.storage.from('item-photos').getPublicUrl(fileName);
-            payload.image_url = data.publicUrl;
-        } catch (err) { console.error("Upload failed", err); }
-    }
 
     const res = await fetch('/api/items', {
         method: 'POST',
