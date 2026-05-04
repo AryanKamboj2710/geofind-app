@@ -91,7 +91,7 @@ function renderFeed() {
             <h3 style="margin: 0.5rem 0;">${item.title}</h3>
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">${item.description}</p>
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <small style="opacity: 0.6;">${new Date(item.created_at).toLocaleDateString()}</small>
+                <span class="date-chip">${new Date(item.created_at).toLocaleDateString()}</span>
                 ${currentUser && currentUser.id !== item.owner_id ? 
                     `<button class="btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="event.stopPropagation(); openChat(${item.owner_id}, ${item.id}, '${item.title.replace(/'/g, "\\'")}')">Message</button>` : ''}
             </div>
