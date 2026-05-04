@@ -519,3 +519,46 @@ header {
   border-color: var(--primary-color);
   color: var(--primary-color);
 }
+
+/* Notification Badge */
+#inboxBtn {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--lost-color);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--surface-color);
+  display: none; /* Hidden by default */
+}
+
+.notification-badge.active {
+  display: block;
+}
+
+/* Toast Notification */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--surface-color);
+  border: 1px solid var(--primary-color);
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 3000;
+  animation: toastSlide 0.3s ease-out;
+}
+
+@keyframes toastSlide {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}

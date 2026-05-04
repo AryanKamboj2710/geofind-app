@@ -28,7 +28,10 @@
             <div class="sidebar-header">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                     <h2 style="margin: 0;">Recent Items</h2>
-                    <button id="inboxBtn" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.85rem; display: none;">Messages</button>
+                    <button id="inboxBtn" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.85rem; display: none;">
+                        Messages
+                        <span id="notifBadge" class="notification-badge"></span>
+                    </button>
                 </div>
                 <button id="reportBtn" class="btn-primary" style="width: 100%;">Report New Item</button>
             </div>
@@ -136,6 +139,8 @@
             </div>
         </div>
     </div>
+
+    <div id="toastContainer"></div>
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"

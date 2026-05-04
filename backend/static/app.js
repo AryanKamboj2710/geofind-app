@@ -8,6 +8,8 @@ let tempMarker = null;
 let currentChatInterval = null;
 let activeChatUserId = null;
 let activeChatItemId = null;
+let lastMessageCount = 0;
+let notifBadge, toastContainer;
 
 // DOM Elements
 let authSection, feedContainer, reportBtn, inboxBtn;
@@ -124,6 +126,7 @@ async function checkAuth() {
         if (response.ok) {
             currentUser = await response.json();
             updateAuthUI(true);
+            startNotificationPolling();
         } else handleLogout();
     } catch (e) { handleLogout(); }
 }
@@ -265,6 +268,7 @@ async function handleChatSubmit(e) {
 
 async function openInbox() {
     inboxModal.classList.add('active');
+    notifBadge.classList.remove('active');
     try {
         const res = await fetch('/api/messages/inbox', { headers: { 'Authorization': `Bearer ${token}` } });
         const msgs = await res.json();
@@ -290,6 +294,36 @@ async function openInbox() {
     } catch (e) { console.error("Inbox failed", e); }
 }
 
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `<span style="color: var(--primary-color);">💬</span> <span>${message}</span>`;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+}
+
+async function startNotificationPolling() {
+    // Background check for new messages every 10 seconds
+    setInterval(async () => {
+        if (!token || !currentUser) return;
+        try {
+            const res = await fetch('/api/messages/inbox', { headers: { 'Authorization': `Bearer ${token}` } });
+            const msgs = await res.json();
+            
+            if (msgs.length > lastMessageCount) {
+                // We have new messages!
+                if (lastMessageCount > 0) { // Don't notify on first load
+                    showToast("You have a new message!");
+                    notifBadge.classList.add('active');
+                    // Refresh chat if open
+                    if (chatModal.classList.contains('active')) fetchMessages();
+                }
+                lastMessageCount = msgs.length;
+            }
+        } catch (e) { console.error("Polling failed", e); }
+    }, 10000);
+}
+
 // Init
 document.addEventListener('DOMContentLoaded', () => {
     authSection = document.getElementById('authSection');
@@ -310,6 +344,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chatInput = document.getElementById('chatInput');
     chatTitle = document.getElementById('chatTitle');
     inboxContent = document.getElementById('inboxContent');
+    notifBadge = document.getElementById('notifBadge');
+    toastContainer = document.getElementById('toastContainer');
 
     document.getElementById('closeAuth').onclick = () => authModal.classList.remove('active');
     document.getElementById('closeReport').onclick = () => reportModal.classList.remove('active');
@@ -319,7 +355,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     document.getElementById('closeInbox').onclick = () => inboxModal.classList.remove('active');
     
-    inboxBtn.onclick = openInbox;
+    inboxBtn.onclick = () => {
+        openInbox();
+        notifBadge.classList.remove('active');
+    };
     authForm.onsubmit = handleAuthSubmit;
     document.getElementById('reportForm').onsubmit = handleReportSubmit;
     chatForm.onsubmit = handleChatSubmit;
