@@ -9,6 +9,7 @@ class ItemBase(BaseModel):
     latitude: float
     longitude: float
     contact_number: str
+    image_url: Optional[str] = None
 
 class ItemCreate(ItemBase):
     pass
