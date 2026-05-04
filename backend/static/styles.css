@@ -9,7 +9,7 @@
   --text-muted: #a1a1aa; /* Zinc 400 */
   --lost-color: #ff2d55;
   --found-color: #00ff9d;
-  --border-color: rgba(255, 255, 255, 0.15);
+  --border-color: #333333; /* Stronger, more visible gray */
   --header-gradient: linear-gradient(to right, #00eeff, #6f00ff);
   --btn-gradient: linear-gradient(135deg, var(--primary-color), #00ff9d);
 }
@@ -91,7 +91,7 @@ h1 {
   width: 400px;
   background: var(--surface-color);
   backdrop-filter: blur(12px);
-  border-right: 1px solid var(--border-color);
+  border-right: 2px solid var(--border-color); /* Stronger vertical boundary */
   display: flex;
   flex-direction: column;
   z-index: 500;
@@ -114,8 +114,8 @@ h1 {
 }
 
 .item-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1.5px solid var(--border-color); /* Thicker card boundaries */
   border-radius: 0.75rem;
   padding: 1rem;
   margin-bottom: 1rem;
@@ -151,6 +151,7 @@ h1 {
 .map-container {
   flex: 1;
   position: relative;
+  border-left: 1px solid var(--border-color); /* Double layer separation */
 }
 
 #map {
