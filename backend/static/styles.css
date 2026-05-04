@@ -86,17 +86,21 @@ h1 {
   display: flex;
   flex: 1;
   height: calc(100vh - 65px);
+  padding: 1rem; /* Spacing around the edge */
+  gap: 1rem; /* Spacing between sidebar and map */
 }
 
 .sidebar {
   width: 400px;
   background: var(--surface-color);
   backdrop-filter: blur(12px);
-  border-right: 2px solid var(--border-color); /* Stronger vertical boundary */
+  border: 2px solid var(--border-color); /* Border on all sides */
+  border-radius: 1rem; /* Rounded corners */
   display: flex;
   flex-direction: column;
   z-index: 500;
   position: relative;
+  overflow: hidden;
 }
 
 .sidebar-header {
@@ -152,7 +156,9 @@ h1 {
 .map-container {
   flex: 1;
   position: relative;
-  border-left: 1px solid var(--border-color); /* Double layer separation */
+  border: 2px solid var(--border-color); /* Border on all sides */
+  border-radius: 1rem; /* Rounded corners */
+  overflow: hidden;
 }
 
 #map {
