@@ -68,6 +68,13 @@ header {
   gap: 1.5rem;
 }
 
+/* Responsive Helpers */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
 
 h1 {
   font-size: 1.5rem;
