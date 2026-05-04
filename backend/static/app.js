@@ -9,6 +9,7 @@ let currentChatInterval = null;
 let activeChatUserId = null;
 let activeChatItemId = null;
 let lastMessageCount = 0;
+let currentFilter = 'all';
 let notifBadge, toastContainer;
 
 // DOM Elements
@@ -65,11 +66,17 @@ async function loadItems() {
 }
 
 function renderFeed() {
-    if (items.length === 0) {
-        feedContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No items reported yet.</p>';
+    // Sort and Filter items
+    const filteredItems = items.filter(item => 
+        currentFilter === 'all' || item.status === currentFilter
+    );
+    const sortedItems = [...filteredItems].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+    if (sortedItems.length === 0) {
+        feedContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No items match this filter.</p>';
         return;
     }
-    const sortedItems = [...items].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
     feedContainer.innerHTML = sortedItems.map(item => `
         <div class="item-card" onclick="focusOnMap(${item.latitude}, ${item.longitude})">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -91,7 +98,12 @@ function renderFeed() {
 function renderMarkers() {
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
-    items.forEach(item => {
+    
+    const filteredItems = items.filter(item => 
+        currentFilter === 'all' || item.status === currentFilter
+    );
+
+    filteredItems.forEach(item => {
         const color = item.status === 'lost' ? '#ef4444' : '#10b981';
         const icon = L.divIcon({
             className: "custom-pin",
@@ -366,6 +378,17 @@ document.addEventListener('DOMContentLoaded', () => {
     authForm.onsubmit = handleAuthSubmit;
     document.getElementById('reportForm').onsubmit = handleReportSubmit;
     chatForm.onsubmit = handleChatSubmit;
+
+    // Filter Listeners
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            e.target.classList.add('active');
+            currentFilter = e.target.dataset.filter;
+            renderFeed();
+            renderMarkers();
+        });
+    });
 
     initMap();
     checkAuth();

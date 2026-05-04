@@ -522,6 +522,31 @@ header {
   color: var(--primary-color);
 }
 
+/* Filter Tabs */
+.filter-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.filter-btn.active {
+  background: var(--primary-color);
+  color: black;
+  border-color: var(--primary-color);
+}
+
 /* Notification Badge */
 #inboxBtn {
   position: relative;
