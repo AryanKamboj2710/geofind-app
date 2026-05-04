@@ -153,7 +153,10 @@ async function checkAuth() {
 function updateAuthUI(isLoggedIn) {
     const sidebarFooter = document.getElementById('sidebarFooter');
     if (isLoggedIn) {
-        authSection.innerHTML = `<span>Welcome back!</span>`;
+        authSection.innerHTML = `
+            <span class="desktop-only">Welcome back!</span>
+            <button onclick="handleLogout()" class="btn-secondary" style="margin-left: 1rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;">Log Out</button>
+        `;
         reportBtn.style.display = 'block';
         inboxBtn.style.display = 'block';
         
