@@ -8,8 +8,8 @@
   --surface-color: rgba(10, 10, 10, 0.8); /* Make surface slightly transparent for the glass effect */ 
   --text-color: #ffffff;
   --text-muted: #a1a1aa; /* Zinc 400 */
-  --lost-color: #ff2d55;
-  --found-color: #00ff9d;
+  --lost-color: #FF0055; /* Electric Neon Red */
+  --found-color: #00FF44; /* Laser Green */
   --border-color: #333333; /* Stronger, more visible gray */
   --header-gradient: linear-gradient(to right, #00eeff, #6f00ff);
   --btn-gradient: linear-gradient(135deg, var(--primary-color), #00ff9d);

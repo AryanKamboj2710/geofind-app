@@ -111,10 +111,10 @@ function renderMarkers() {
     });
 
     filteredItems.forEach(item => {
-        const color = item.status === 'lost' ? '#ef4444' : '#10b981';
+        const color = item.status === 'lost' ? '#FF0055' : '#00FF44';
         const icon = L.divIcon({
             className: "custom-pin",
-            html: `<span style="background-color: ${color}; width: 1.2rem; height: 1.2rem; display: block; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px ${color};"></span>`,
+            html: `<span style="background-color: ${color}; width: 1.2rem; height: 1.2rem; display: block; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 15px ${color}, 0 0 5px white;"></span>`,
             iconSize: [20, 20],
             iconAnchor: [10, 10]
         });
