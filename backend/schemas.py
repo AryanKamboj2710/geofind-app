@@ -33,6 +33,21 @@ class User(UserBase):
 
     model_config = {"from_attributes": True}
 
+class MessageBase(BaseModel):
+    content: str
+    receiver_id: int
+    item_id: int
+
+class MessageCreate(MessageBase):
+    pass
+
+class Message(MessageBase):
+    id: int
+    sender_id: int
+    timestamp: datetime
+
+    model_config = {"from_attributes": True}
+
 class Token(BaseModel):
     access_token: str
     token_type: str

@@ -5,31 +5,38 @@ let items = [];
 let currentUser = null;
 let token = localStorage.getItem('token');
 let tempMarker = null;
+let currentChatInterval = null;
+let activeChatUserId = null;
+let activeChatItemId = null;
 
-// DOM Elements (Selected after DOM is ready)
-let authSection, feedContainer, reportBtn;
-let authModal, reportModal, authForm, authTitle, authSubmitBtn, toggleAuthModeBtn, nameGroup, authToggleText;
+// Supabase Configuration (REPLACE THESE WITH YOUR ACTUAL KEYS)
+const SUPABASE_URL = 'https://jydtzsanrzcurakxygst.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5ZHR6c2FucnpjdXJha3h5Z3N0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NzMwMTMsImV4cCI6MjA5MzQ0OTAxM30.2Zb9iCiln4gX_e-ptEW85aD-QmULnV8WPTi-eWBimPs';
+const supabaseClient = (typeof supabase !== 'undefined' && supabase.createClient) ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-// Auth Form Elements (Selected after DOM is ready)
+// DOM Elements
+let authSection, feedContainer, reportBtn, inboxBtn;
+let authModal, reportModal, chatModal, inboxModal;
+let authForm, authTitle, authSubmitBtn, nameGroup, authToggleText;
+let chatMessages, chatForm, chatInput, chatTitle;
+let inboxContent;
+
 let isLoginMode = true;
 
 // Initialize Map
 function initMap() {
-    // Default to a central location with a minimum zoom to fill the container
     map = L.map('map', {
         minZoom: 2,
         maxBounds: [[-90, -180], [90, 180]],
         maxBoundsViscosity: 1.0
     }).setView([51.505, -0.09], 13);
 
-    // zSleek Dark Map View (CartoDB Dark Matter)
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         noWrap: true,
         bounds: [[-90, -180], [90, 180]],
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
     }).addTo(map);
 
-    // Try to get user's location
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(position => {
             const { latitude, longitude } = position.coords;
@@ -37,17 +44,10 @@ function initMap() {
         });
     }
 
-    // Map click event for reporting
     map.on('click', function (e) {
-        if (!currentUser) return; // Only logged in users can report
-
-        if (tempMarker) {
-            map.removeLayer(tempMarker);
-        }
-
+        if (!currentUser) return alert("Please log in to report an item.");
+        if (tempMarker) map.removeLayer(tempMarker);
         tempMarker = L.marker(e.latlng).addTo(map);
-
-        // Open report modal and pre-fill coordinates
         document.getElementById('itemLat').value = e.latlng.lat.toFixed(6);
         document.getElementById('itemLng').value = e.latlng.lng.toFixed(6);
         reportModal.classList.add('active');
@@ -56,7 +56,6 @@ function initMap() {
     loadItems();
 }
 
-// Fetch and display items
 async function loadItems() {
     try {
         const response = await fetch('/api/items');
@@ -65,20 +64,15 @@ async function loadItems() {
         renderMarkers();
     } catch (error) {
         console.error("Failed to load items", error);
-        feedContainer.innerHTML = '<p style="color: red;">Failed to load items.</p>';
     }
 }
 
-// Render sidebar feed
 function renderFeed() {
     if (items.length === 0) {
-        feedContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No items reported yet.</p>';
+        feedContainer.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">No items reported yet.</p>';
         return;
     }
-
-    // Sort by newest first
     const sortedItems = [...items].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
     feedContainer.innerHTML = sortedItems.map(item => `
         <div class="item-card" onclick="focusOnMap(${item.latitude}, ${item.longitude})">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -86,65 +80,41 @@ function renderFeed() {
                 ${currentUser && currentUser.id === item.owner_id ?
             `<button class="delete-btn" onclick="event.stopPropagation(); handleDelete(${item.id})">×</button>` : ''}
             </div>
-            <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">${item.title}</h3>
-            <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">${item.description}</p>
-            <div style="font-size: 0.875rem; margin-bottom: 0.5rem; color: var(--primary-color);">
-                <strong>Contact:</strong> ${item.contact_number}
+            <h3 style="margin: 0.5rem 0;">${item.title}</h3>
+            ${item.image_url ? `<img src="${item.image_url}" style="width: 100%; height: 150px; object-fit: cover; border-radius: 0.5rem; margin-bottom: 0.75rem;">` : ''}
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">${item.description}</p>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <small style="opacity: 0.6;">${new Date(item.created_at).toLocaleDateString()}</small>
+                ${currentUser && currentUser.id !== item.owner_id ? 
+                    `<button class="btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="event.stopPropagation(); openChat(${item.owner_id}, ${item.id}, '${item.title.replace(/'/g, "\\'")}')">Message</button>` : ''}
             </div>
-            <small style="color: var(--text-muted); opacity: 0.7;">${new Date(item.created_at).toLocaleDateString()}</small>
         </div>
     `).join('');
 }
 
-// Render map markers
 function renderMarkers() {
-    // Clear existing markers
     markers.forEach(marker => map.removeLayer(marker));
     markers = [];
-
     items.forEach(item => {
         const color = item.status === 'lost' ? '#ef4444' : '#10b981';
-
-        const markerHtmlStyles = `
-            background-color: ${color};
-            width: 1.5rem;
-            height: 1.5rem;
-            display: block;
-            left: -0.75rem;
-            top: -0.75rem;
-            position: relative;
-            border-radius: 50%;
-            border: 2px solid #FFFFFF;
-            box-shadow: 0 0 10px ${color};
-        `;
-
         const icon = L.divIcon({
             className: "custom-pin",
-            iconAnchor: [0, 0],
-            labelAnchor: [-6, 0],
-            popupAnchor: [0, -15],
-            html: `<span style="${markerHtmlStyles}" />`
+            html: `<span style="background-color: ${color}; width: 1.2rem; height: 1.2rem; display: block; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px ${color};"></span>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10]
         });
 
         const popupContent = `
             <div style="padding: 5px; min-width: 150px;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px;">
-                    <span class="item-status status-${item.status}">${item.status.toUpperCase()}</span>
-                    ${currentUser && currentUser.id === item.owner_id ?
-                `<button class="delete-btn" onclick="handleDelete(${item.id})" title="Delete item">×</button>` : ''}
-                </div>
-                <h4 style="margin: 5px 0;">${item.title}</h4>
-                <p style="margin: 0; font-size: 0.85rem;">${item.description}</p>
-                <div style="margin-top: 8px; font-size: 0.85rem; color: var(--primary-color);">
-                    <strong>Call:</strong> ${item.contact_number}
-                </div>
+                <h4 style="margin: 0 0 5px 0;">${item.title}</h4>
+                <p style="margin: 0 0 8px 0; font-size: 0.8rem;">${item.description}</p>
+                ${currentUser && currentUser.id !== item.owner_id ? 
+                    `<button class="btn-primary" style="width: 100%; padding: 4px; font-size: 0.8rem;" onclick="openChat(${item.owner_id}, ${item.id}, '${item.title.replace(/'/g, "\\'")}')">Message Owner</button>` : 
+                    `<small style="color: var(--primary-color);">Your Item</small>`}
             </div>
         `;
 
-        const marker = L.marker([item.latitude, item.longitude], { icon })
-            .bindPopup(popupContent)
-            .addTo(map);
-
+        const marker = L.marker([item.latitude, item.longitude], { icon }).bindPopup(popupContent).addTo(map);
         markers.push(marker);
     });
 }
@@ -153,216 +123,225 @@ function focusOnMap(lat, lng) {
     map.setView([lat, lng], 16, { animate: true });
 }
 
-// Auth State Management
+// Auth Logic
 async function checkAuth() {
     if (!token) return updateAuthUI(false);
-
     try {
-        const response = await fetch('/api/me', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
+        const response = await fetch('/api/me', { headers: { 'Authorization': `Bearer ${token}` } });
         if (response.ok) {
             currentUser = await response.json();
             updateAuthUI(true);
-        } else {
-            handleLogout();
-        }
-    } catch (e) {
-        handleLogout();
-    }
+        } else handleLogout();
+    } catch (e) { handleLogout(); }
 }
 
 function updateAuthUI(isLoggedIn) {
     if (isLoggedIn) {
-        authSection.innerHTML = `
-            <span style="margin-right: 1rem;">Hi, ${currentUser.name || currentUser.email}</span>
-            <button onclick="handleLogout()" style="border-color: var(--lost-color); color: var(--lost-color);">Log Out</button>
-        `;
+        authSection.innerHTML = `<span>Hi, ${currentUser.name}</span><button onclick="handleLogout()" class="btn-secondary" style="margin-left: 1rem;">Log Out</button>`;
         reportBtn.style.display = 'block';
+        inboxBtn.style.display = 'block';
     } else {
-        authSection.innerHTML = `
-            <button id="loginBtn">Log In</button>
-            <button id="signupBtn" style="background: var(--primary-color); border-color: var(--primary-color);">Sign Up</button>
-        `;
-        document.getElementById('loginBtn').addEventListener('click', () => openAuthModal(true));
-        document.getElementById('signupBtn').addEventListener('click', () => openAuthModal(false));
+        authSection.innerHTML = `<button onclick="openAuthModal(true)">Log In</button><button class="btn-primary" onclick="openAuthModal(false)" style="margin-left: 10px;">Sign Up</button>`;
         reportBtn.style.display = 'none';
+        inboxBtn.style.display = 'none';
     }
+    renderFeed();
+    renderMarkers();
 }
 
 function handleLogout() {
-    token = null;
-    currentUser = null;
+    token = null; currentUser = null;
     localStorage.removeItem('token');
     updateAuthUI(false);
 }
 
-// Modal Event Listeners
 function openAuthModal(login = true) {
     isLoginMode = login;
     authTitle.textContent = isLoginMode ? 'Log In' : 'Sign Up';
     authSubmitBtn.textContent = isLoginMode ? 'Log In' : 'Sign Up';
     nameGroup.style.display = isLoginMode ? 'none' : 'block';
-    if (!isLoginMode) document.getElementById('name').setAttribute('required', 'true');
-    else document.getElementById('name').removeAttribute('required');
-
-    authToggleText.innerHTML = isLoginMode
-        ? 'Don\'t have an account? <span id="toggleAuthMode">Sign Up</span>'
-        : 'Already have an account? <span id="toggleAuthMode">Log In</span>';
-
-    document.getElementById('toggleAuthMode').addEventListener('click', () => openAuthModal(!isLoginMode));
+    authToggleText.innerHTML = isLoginMode ? `Don't have an account? <a href="#" onclick="openAuthModal(false)">Sign Up</a>` : `Already have an account? <a href="#" onclick="openAuthModal(true)">Log In</a>`;
     authModal.classList.add('active');
 }
 
-
-
-
-
-async function handleDelete(itemId) {
-    if (!confirm("Are you sure you want to delete this item?")) return;
-
-    try {
-        const res = await fetch(`/api/items/${itemId}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-
-        if (!res.ok) throw new Error("Failed to delete item");
-
-        await loadItems();
-    } catch (err) {
-        alert(err.message);
-    }
-}
-
-// Initialization
-document.addEventListener('DOMContentLoaded', () => {
-    // Select Elements
-    authSection = document.getElementById('authSection');
-    feedContainer = document.getElementById('feedContainer');
-    reportBtn = document.getElementById('reportBtn');
-    authModal = document.getElementById('authModal');
-    reportModal = document.getElementById('reportModal');
-    authForm = document.getElementById('authForm');
-    authTitle = document.getElementById('authTitle');
-    authSubmitBtn = document.getElementById('authSubmitBtn');
-    toggleAuthModeBtn = document.getElementById('toggleAuthMode');
-    nameGroup = document.getElementById('nameGroup');
-    authToggleText = document.getElementById('authToggleText');
-
-    // Modal Close Listeners
-    document.getElementById('closeAuthModal').addEventListener('click', () => authModal.classList.remove('active'));
-    document.getElementById('closeReportModal').addEventListener('click', () => {
-        reportModal.classList.remove('active');
-        if (tempMarker) map.removeLayer(tempMarker);
-    });
-
-    reportBtn.addEventListener('click', () => {
-        alert("Click anywhere on the map to drop a pin and report an item.");
-    });
-
-    // Form Listener
-    authForm.addEventListener('submit', handleAuthSubmit);
-    document.getElementById('reportForm').addEventListener('submit', handleReportSubmit);
-
-    initMap();
-    checkAuth();
-});
-
-// Refactored Handlers for better organization
 async function handleAuthSubmit(e) {
     e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
+    const email = document.getElementById('authEmail').value;
+    const password = document.getElementById('authPassword').value;
     try {
         if (isLoginMode) {
             const formData = new URLSearchParams();
-            formData.append('username', email);
-            formData.append('password', password);
-
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData
-            });
-
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.detail || "Login failed");
-            }
+            formData.append('username', email); formData.append('password', password);
+            const res = await fetch('/api/login', { method: 'POST', body: formData });
+            if (!res.ok) throw new Error("Invalid credentials");
             const data = await res.json();
             token = data.access_token;
-            localStorage.setItem('token', token);
         } else {
-            const name = document.getElementById('name').value;
+            const name = document.getElementById('regName').value;
             const res = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password, name })
             });
-
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.detail || "Registration failed");
-            }
-
+            if (!res.ok) throw new Error("Registration failed");
             const formData = new URLSearchParams();
-            formData.append('username', email);
-            formData.append('password', password);
-            const loginRes = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData
-            });
-
-            if (!loginRes.ok) throw new Error("Auto-login failed after registration");
-
+            formData.append('username', email); formData.append('password', password);
+            const loginRes = await fetch('/api/login', { method: 'POST', body: formData });
             const data = await loginRes.json();
             token = data.access_token;
-            localStorage.setItem('token', token);
         }
-
+        localStorage.setItem('token', token);
         authModal.classList.remove('active');
-        authForm.reset();
-        await checkAuth();
-    } catch (err) {
-        console.error("Auth error:", err);
-        alert(err.message);
-    }
+        checkAuth();
+    } catch (err) { alert(err.message); }
 }
 
 async function handleReportSubmit(e) {
     e.preventDefault();
-    if (!token) return alert("Please log in first");
-
     const payload = {
         title: document.getElementById('itemTitle').value,
         description: document.getElementById('itemDescription').value,
         status: document.getElementById('itemStatus').value,
         latitude: parseFloat(document.getElementById('itemLat').value),
         longitude: parseFloat(document.getElementById('itemLng').value),
-        contact_number: document.getElementById('itemContact').value
+        contact_number: document.getElementById('itemContact').value,
+        image_url: null
     };
 
-    try {
-        const res = await fetch('/api/items', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(payload)
-        });
+    const imageFile = document.getElementById('itemImage').files[0];
+    if (imageFile && supabaseClient) {
+        try {
+            const fileName = `${Date.now()}-${imageFile.name}`;
+            await supabaseClient.storage.from('item-photos').upload(fileName, imageFile);
+            const { data } = supabaseClient.storage.from('item-photos').getPublicUrl(fileName);
+            payload.image_url = data.publicUrl;
+        } catch (err) { console.error("Upload failed", err); }
+    }
 
-        if (!res.ok) throw new Error("Failed to report item");
-
+    const res = await fetch('/api/items', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(payload)
+    });
+    if (res.ok) {
         reportModal.classList.remove('active');
         document.getElementById('reportForm').reset();
-        tempMarker = null;
-        await loadItems();
-    } catch (err) {
-        alert(err.message);
+        loadItems();
     }
 }
+
+async function handleDelete(itemId) {
+    if (!confirm("Delete this item?")) return;
+    await fetch(`/api/items/${itemId}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+    loadItems();
+}
+
+// Chat Logic
+async function openChat(otherUserId, itemId, itemTitle) {
+    activeChatUserId = otherUserId;
+    activeChatItemId = itemId;
+    chatTitle.textContent = `Chat: ${itemTitle}`;
+    chatModal.classList.add('active');
+    fetchMessages();
+    if (currentChatInterval) clearInterval(currentChatInterval);
+    currentChatInterval = setInterval(fetchMessages, 3000);
+}
+
+async function fetchMessages() {
+    if (!activeChatUserId || !activeChatItemId) return;
+    try {
+        const res = await fetch(`/api/messages/chat/${activeChatUserId}/${activeChatItemId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const msgs = await res.json();
+        chatMessages.innerHTML = msgs.map(m => `
+            <div class="msg ${m.sender_id === currentUser.id ? 'msg-sent' : 'msg-received'}">
+                ${m.content}
+                <div style="font-size: 0.6rem; opacity: 0.7; margin-top: 2px;">${new Date(m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+            </div>
+        `).join('');
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    } catch (e) { console.error("Chat fetch failed", e); }
+}
+
+async function handleChatSubmit(e) {
+    e.preventDefault();
+    const content = chatInput.value.trim();
+    if (!content) return;
+    try {
+        const res = await fetch('/api/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ content, receiver_id: activeChatUserId, item_id: activeChatItemId })
+        });
+        if (res.ok) {
+            chatInput.value = '';
+            fetchMessages();
+        }
+    } catch (e) { console.error("Send failed", e); }
+}
+
+async function openInbox() {
+    inboxModal.classList.add('active');
+    try {
+        const res = await fetch('/api/messages/inbox', { headers: { 'Authorization': `Bearer ${token}` } });
+        const msgs = await res.json();
+        
+        // Group by conversation
+        const convos = {};
+        msgs.forEach(m => {
+            const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+            const key = `${otherId}-${m.item_id}`;
+            if (!convos[key]) convos[key] = m;
+        });
+
+        inboxContent.innerHTML = Object.values(convos).map(m => {
+            const otherId = m.sender_id === currentUser.id ? m.receiver_id : m.sender_id;
+            return `
+                <div class="inbox-item" onclick="openChat(${otherId}, ${m.item_id}, 'Conversation')">
+                    <div style="font-weight: 600; margin-bottom: 4px;">Item #${m.item_id}</div>
+                    <div style="font-size: 0.85rem; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${m.content}</div>
+                    <small style="opacity: 0.5;">${new Date(m.timestamp).toLocaleString()}</small>
+                </div>
+            `;
+        }).join('');
+    } catch (e) { console.error("Inbox failed", e); }
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+    authSection = document.getElementById('authSection');
+    feedContainer = document.getElementById('feedContainer');
+    reportBtn = document.getElementById('reportBtn');
+    inboxBtn = document.getElementById('inboxBtn');
+    authModal = document.getElementById('authModal');
+    reportModal = document.getElementById('reportModal');
+    chatModal = document.getElementById('chatModal');
+    inboxModal = document.getElementById('inboxModal');
+    authForm = document.getElementById('authForm');
+    authTitle = document.getElementById('authTitle');
+    authSubmitBtn = document.getElementById('authSubmitBtn');
+    nameGroup = document.getElementById('nameGroup');
+    authToggleText = document.getElementById('authToggleText');
+    chatMessages = document.getElementById('chatMessages');
+    chatForm = document.getElementById('chatForm');
+    chatInput = document.getElementById('chatInput');
+    chatTitle = document.getElementById('chatTitle');
+    inboxContent = document.getElementById('inboxContent');
+
+    document.getElementById('closeAuth').onclick = () => authModal.classList.remove('active');
+    document.getElementById('closeReport').onclick = () => reportModal.classList.remove('active');
+    document.getElementById('closeChat').onclick = () => {
+        chatModal.classList.remove('active');
+        if (currentChatInterval) clearInterval(currentChatInterval);
+    };
+    document.getElementById('closeInbox').onclick = () => inboxModal.classList.remove('active');
+    
+    inboxBtn.onclick = openInbox;
+    authForm.onsubmit = handleAuthSubmit;
+    document.getElementById('reportForm').onsubmit = handleReportSubmit;
+    chatForm.onsubmit = handleChatSubmit;
+
+    initMap();
+    checkAuth();
+});

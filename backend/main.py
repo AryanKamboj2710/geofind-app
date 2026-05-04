@@ -105,3 +105,30 @@ def delete_item(item_id: int, db: Session = Depends(get_db), current_user: model
     db.delete(db_item)
     db.commit()
     return {"message": "Item deleted successfully"}
+
+# Message Endpoints
+@app.post("/api/messages", response_model=schemas.Message)
+def send_message(message: schemas.MessageCreate, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    db_message = models.Message(**message.model_dump(), sender_id=current_user.id)
+    db.add(db_message)
+    db.commit()
+    db.refresh(db_message)
+    return db_message
+
+@app.get("/api/messages/chat/{other_user_id}/{item_id}", response_model=List[schemas.Message])
+def get_chat(other_user_id: int, item_id: int, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    messages = db.query(models.Message).filter(
+        models.Message.item_id == item_id,
+        ((models.Message.sender_id == current_user.id) & (models.Message.receiver_id == other_user_id)) |
+        ((models.Message.sender_id == other_user_id) & (models.Message.receiver_id == current_user.id))
+    ).order_by(models.Message.timestamp.asc()).all()
+    return messages
+
+@app.get("/api/messages/inbox", response_model=List[schemas.Message])
+def get_inbox(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    # Simple inbox: get latest message from each conversation
+    # For a real app, this would be more complex, but this works for v1
+    messages = db.query(models.Message).filter(
+        (models.Message.sender_id == current_user.id) | (models.Message.receiver_id == current_user.id)
+    ).order_by(models.Message.timestamp.desc()).all()
+    return messages

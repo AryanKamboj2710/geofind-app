@@ -1,27 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeoFind - Lost & Found</title>
+    <title>GeoFind - Lost & Found Dashboard</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
-
 <body>
     <header>
-        <h1>GeoFind</h1>
+        <div class="logo">
+            <h1>GeoFind</h1>
+        </div>
         <div class="header-actions">
-            <div class="auth-buttons" id="authSection">
-                <!-- Dynamically populated by JS based on auth state -->
-                <button id="loginBtn">Log In</button>
-                <button id="signupBtn"
-                    style="background: var(--primary-color); border-color: var(--primary-color);">Sign Up</button>
+            <div id="authSection" class="auth-buttons">
+                <button onclick="openModal('authModal')">Log In</button>
+                <button class="btn-primary" onclick="openModal('authModal', false)">Sign Up</button>
             </div>
         </div>
     </header>
@@ -29,76 +26,75 @@
     <div class="main-container">
         <div class="sidebar">
             <div class="sidebar-header">
-                <h2>Recent Items</h2>
-                <button id="reportBtn" class="btn-primary" style="display: none;">Report Lost/Found Item</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <h2 style="margin: 0;">Recent Items</h2>
+                    <button id="inboxBtn" class="btn-secondary" style="padding: 0.5rem 0.75rem; font-size: 0.85rem; display: none;">Messages</button>
+                </div>
+                <button id="reportBtn" class="btn-primary" style="width: 100%;">Report New Item</button>
             </div>
-            <div class="sidebar-content" id="feedContainer">
-                <!-- Items populated here -->
-                <p style="color: var(--text-muted); text-align: center;">Loading items...</p>
+            <div id="feedContainer" class="sidebar-content">
+                <!-- Items will be loaded here -->
             </div>
         </div>
-        <div class="map-container">
+        <div id="map-container" class="map-container">
             <div id="map"></div>
         </div>
     </div>
 
     <!-- Auth Modal -->
-    <div class="modal-overlay" id="authModal">
+    <div id="authModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="authTitle">Log In</h3>
-                <button class="close-btn" id="closeAuthModal">&times;</button>
-            </div>
+            <span class="close" id="closeAuth">&times;</span>
+            <h2 id="authTitle">Log In</h2>
             <form id="authForm">
-                <div class="form-group" id="nameGroup" style="display: none;">
-                    <label for="name">Full Name</label>
-                    <input type="text" id="name" placeholder="John Doe">
+                <div id="nameGroup" class="form-group" style="display: none;">
+                    <label for="regName">Full Name</label>
+                    <input type="text" id="regName" placeholder="Enter your name">
                 </div>
                 <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" required placeholder="you@example.com">
+                    <label for="authEmail">Email Address</label>
+                    <input type="email" id="authEmail" required placeholder="Enter your email">
                 </div>
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" required placeholder="••••••••">
+                    <label for="authPassword">Password</label>
+                    <input type="password" id="authPassword" required placeholder="Enter your password">
                 </div>
-                <button type="submit" class="btn-primary" id="authSubmitBtn">Log In</button>
+                <button type="submit" id="authSubmitBtn" class="btn-primary">Log In</button>
+                <p id="authToggleText" style="margin-top: 1.5rem; text-align: center; font-size: 0.875rem;">
+                    Don't have an account? <a href="#" id="toggleAuthMode">Sign Up</a>
+                </p>
             </form>
-            <div class="toggle-form">
-                <p id="authToggleText">Don't have an account? <span id="toggleAuthMode">Sign Up</span></p>
-            </div>
         </div>
     </div>
 
-    <!-- Report Item Modal -->
-    <div class="modal-overlay" id="reportModal">
+    <!-- Report Modal -->
+    <div id="reportModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>Report an Item</h3>
-                <button class="close-btn" id="closeReportModal">&times;</button>
-            </div>
+            <span class="close" id="closeReport">&times;</span>
+            <h2>Report Item</h2>
             <form id="reportForm">
-                <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">Click on the map to set
-                    the exact location, then fill out this form.</p>
-                <div class="form-group">
-                    <label for="itemStatus">Status</label>
-                    <select id="itemStatus" required>
-                        <option value="lost">I lost something</option>
-                        <option value="found">I found something</option>
-                    </select>
-                </div>
                 <div class="form-group">
                     <label for="itemTitle">Item Title</label>
-                    <input type="text" id="itemTitle" required placeholder="e.g. Golden Retriever, Blue Wallet">
+                    <input type="text" id="itemTitle" required placeholder="e.g. Lost iPhone 13">
                 </div>
                 <div class="form-group">
                     <label for="itemDescription">Description</label>
-                    <textarea id="itemDescription" rows="3" required
-                        placeholder="Provide distinguishing details..."></textarea>
+                    <textarea id="itemDescription" required placeholder="Describe the item, color, etc."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="itemStatus">Status</label>
+                    <select id="itemStatus" required>
+                        <option value="lost">Lost</option>
+                        <option value="found">Found</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="itemContact">Contact Number</label>
                     <input type="tel" id="itemContact" required placeholder="e.g. +1 234 567 890">
+                </div>
+                <div class="form-group">
+                    <label for="itemImage">Item Photo (Optional)</label>
+                    <input type="file" id="itemImage" accept="image/*">
                 </div>
                 <div style="display: flex; gap: 1rem; margin-bottom: 1.25rem;">
                     <div class="form-group" style="flex: 1; margin-bottom: 0;">
@@ -115,10 +111,41 @@
         </div>
     </div>
 
+    <!-- Chat Modal -->
+    <div id="chatModal" class="modal">
+        <div class="modal-content chat-modal-content">
+            <div class="chat-header">
+                <h3 id="chatTitle">Chat</h3>
+                <span class="close" id="closeChat">&times;</span>
+            </div>
+            <div id="chatMessages" class="chat-messages">
+                <!-- Messages will appear here -->
+            </div>
+            <form id="chatForm" class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Type a message..." required>
+                <button type="submit" class="btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inbox Modal -->
+    <div id="inboxModal" class="modal">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3>Your Conversations</h3>
+                <span class="close" id="closeInbox">&times;</span>
+            </div>
+            <div id="inboxContent" class="inbox-list">
+                <!-- Inbox items will appear here -->
+            </div>
+        </div>
+    </div>
+
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/static/app.js"></script>
 </body>
-
 </html>
