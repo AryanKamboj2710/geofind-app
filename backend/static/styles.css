@@ -79,6 +79,7 @@ h1 {
 .auth-buttons button:hover {
   background: var(--primary-color);
   border-color: var(--primary-color);
+  color: #000000; /* Make text black for readability */
 }
 
 .main-container {
