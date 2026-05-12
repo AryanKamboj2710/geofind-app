@@ -1,6 +1,7 @@
 # GeoFind - Lost & Found Platform
 
-![GeoFind]  
+![Foundly]<img width="1168" height="784" alt="wmremove-transformed" src="https://github.com/user-attachments/assets/244e9daa-f602-4473-9b5d-f4fc83a5bdf4" />
+ 
 *A location-based platform to find lost items and connect with people nearby.*
 
 ---
@@ -111,7 +112,7 @@ geofind-app/
 
 ## 🌐 Live Demo
 
-[View Live Project](https://geofind-app.onrender.com)  *(Update this link with your actual Render URL)*
+[View Live Project](https://geofind-app.onrender.com)  
 
 ---
 
