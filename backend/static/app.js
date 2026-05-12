@@ -392,6 +392,12 @@ document.addEventListener('DOMContentLoaded', () => {
         openInbox();
         notifBadge.classList.remove('active');
     };
+    
+    document.getElementById('hamburgerBtn').addEventListener('click', () => {
+        const menu = document.getElementById('hamburgerMenu');
+        menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+    });
+
     authForm.onsubmit = handleAuthSubmit;
     document.getElementById('reportForm').onsubmit = handleReportSubmit;
     chatForm.onsubmit = handleChatSubmit;
@@ -417,8 +423,3 @@ document.addEventListener('DOMContentLoaded', () => {
     initMap();
     checkAuth();
 });
-
-window.toggleHamburgerMenu = function() {
-    const menu = document.getElementById('hamburgerMenu');
-    menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
-};
