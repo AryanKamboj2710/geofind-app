@@ -1,6 +1,6 @@
 # GeoFind - Lost & Found Platform
 
-![GeoFind](https://via.placeholder.com/800x400/4f46e5/white?text=GeoFind)  
+![GeoFind](https://geofind-app.onrender.com/)  
 *A location-based platform to find lost items and connect with people nearby.*
 
 ---
@@ -41,7 +41,8 @@ It solves the common problem of lost belongings by combining **geolocation**, **
 
 ## 📸 Screenshots
 
-*(Add your screenshots here)*
+HOME PAGE<img width="1917" height="868" alt="image" src="https://github.com/user-attachments/assets/1086b8cb-7306-49ad-b57a-e51b8385a327" />
+
 
 <!-- 
 ![Home Page](screenshots/home.png)
