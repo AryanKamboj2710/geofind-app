@@ -417,3 +417,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initMap();
     checkAuth();
 });
+
+window.toggleHamburgerMenu = function() {
+    const menu = document.getElementById('hamburgerMenu');
+    menu.style.display = menu.style.display === 'none' ? 'flex' : 'none';
+};
