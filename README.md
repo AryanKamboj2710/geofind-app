@@ -41,11 +41,14 @@ It solves the common problem of lost belongings by combining **geolocation**, **
 
 ## 📸 Screenshots
 
-HOME PAGE<img width="1917" height="868" alt="image" src="https://github.com/user-attachments/assets/1086b8cb-7306-49ad-b57a-e51b8385a327" />
+HOME PAGE
+<img width="1917" height="868" alt="image" src="https://github.com/user-attachments/assets/1086b8cb-7306-49ad-b57a-e51b8385a327" />
 
-REPORT ITEM WINDOW<img width="593" height="792" alt="image" src="https://github.com/user-attachments/assets/c7151ea0-36f4-4302-b98a-ffb595bb6263" />
+REPORT ITEM WINDOW
+<img width="593" height="792" alt="image" src="https://github.com/user-attachments/assets/c7151ea0-36f4-4302-b98a-ffb595bb6263" />
 
-CHAT WINDOW<img width="619" height="325" alt="image" src="https://github.com/user-attachments/assets/0cd2c6ef-1788-46fe-84fd-a1ab37f6273b" />
+CHAT WINDOW
+<img width="619" height="325" alt="image" src="https://github.com/user-attachments/assets/0cd2c6ef-1788-46fe-84fd-a1ab37f6273b" />
 
 
 
