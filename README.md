@@ -1,6 +1,6 @@
 # GeoFind - Lost & Found Platform
 
-![GeoFind](https://geofind-app.onrender.com/)  
+![GeoFind]  
 *A location-based platform to find lost items and connect with people nearby.*
 
 ---
