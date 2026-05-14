@@ -5,6 +5,7 @@ let items = [];
 let currentUser = null;
 let token = localStorage.getItem('token');
 let tempMarker = null;
+let userMarker = null;
 let currentChatInterval = null;
 let activeChatUserId = null;
 let activeChatItemId = null;
@@ -37,9 +38,34 @@ function initMap() {
     }).addTo(map);
 
     if (navigator.geolocation) {
+        // Get initial position, set map view, and add user marker
         navigator.geolocation.getCurrentPosition(position => {
             const { latitude, longitude } = position.coords;
             map.setView([latitude, longitude], 13);
+            userMarker = L.circleMarker([latitude, longitude], {
+                radius: 8,
+                color: '#0000FF',
+                fillColor: '#0000FF',
+                fillOpacity: 0.8
+            }).addTo(map);
+        });
+        // Watch for location changes, update marker, and keep map centered
+        navigator.geolocation.watchPosition(position => {
+            const { latitude, longitude } = position.coords;
+            if (userMarker) {
+                userMarker.setLatLng([latitude, longitude]);
+            } else {
+                userMarker = L.circleMarker([latitude, longitude], {
+                    radius: 8,
+                    color: '#0000FF',
+                    fillColor: '#0000FF',
+                    fillOpacity: 0.8
+                }).addTo(map);
+            }
+            // Keep map centered on user location
+            map.setView([latitude, longitude], map.getZoom(), { animate: true });
+        }, err => {
+            console.warn('Geolocation watch error:', err);
         });
     }
 
