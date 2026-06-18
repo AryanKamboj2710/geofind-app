@@ -1,11 +1,17 @@
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-from jose import jwt
+from jose import jwt, JWTError
 import bcrypt
 
+import os
+from dotenv import load_dotenv
 
-SECRET_KEY = "super_secret_geo_key_for_development"  # In production, use env variable
+load_dotenv()
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("No SECRET_KEY set for FastAPI application. Please set it in .env or environment variables.")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
