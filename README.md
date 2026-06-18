@@ -126,7 +126,7 @@ geofind-app/
 
 ## 📄 License
 
-This project is open for learning and personal use.
+This project is open for learning.
 
 ---
 
